@@ -11,6 +11,7 @@ type WrongItem = {
   pergunta: string;
   respostaUsuario: string;
   respostaCerta: string;
+  comentario?: string;
 };
 
 type AvaliacaoResp = {
@@ -193,6 +194,11 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
                 <p className="font-body text-rosa-choque">
                   resposta: <strong>{w.respostaCerta}</strong>
                 </p>
+                {w.comentario && (
+                  <p className="font-display text-preto-revista/80 italic mt-2 pt-2 border-t border-rosa-pastel/50 text-[13px] leading-snug">
+                    💅 {w.comentario}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

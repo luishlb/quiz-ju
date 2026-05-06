@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bungee, Lilita_One, Poppins } from "next/font/google";
+import { MusicButton } from "@/components/ui/MusicButton";
 import { SparkleBackground } from "@/components/ui/SparkleBackground";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col relative">
         <SparkleBackground />
         <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        <MusicButton />
       </body>
     </html>
   );

@@ -11,8 +11,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { QUESTIONS } from "@/data/questions";
 import {
-  gerarManchete,
+  gerarAvaliacao,
   validateShorts,
+  type ErroParaComentar,
   type ShortValidationItem,
 } from "@/lib/gemini";
 import { matchesAny, matchesKeyword } from "@/lib/normalize";
@@ -31,6 +32,8 @@ type WrongItem = {
   pergunta: string;
   respostaUsuario: string;
   respostaCerta: string;
+  /** Comentário curto e engraçado gerado pelo Gemini sobre o erro */
+  comentario?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -134,20 +137,38 @@ export async function POST(request: NextRequest) {
   const musicaJu = (respostas.q25 ?? "").toString().trim() || undefined;
   const recado = (respostas.q26 ?? "").toString().trim() || undefined;
 
+  // Prepara payload de erros pro Gemini comentar
+  const errosParaIA: ErroParaComentar[] = wrongItems.map((w) => ({
+    id: w.id,
+    pergunta: w.pergunta,
+    respostaCerta: w.respostaCerta,
+    respostaUsuario: w.respostaUsuario,
+  }));
+
   let manchete = "";
   try {
-    manchete = await gerarManchete({
-      nome,
-      score,
-      total,
-      tier: tier.title,
-      palavraUnica,
-      fraseCompletar,
-      musicaJu,
-      recado,
-    });
+    const avaliacao = await gerarAvaliacao(
+      {
+        nome,
+        score,
+        total,
+        tier: tier.title,
+        palavraUnica,
+        fraseCompletar,
+        musicaJu,
+        recado,
+      },
+      errosParaIA,
+    );
+    manchete = avaliacao.manchete;
+
+    // Anexa cada comentário ao erro correspondente
+    for (const c of avaliacao.comentarios) {
+      const target = wrongItems.find((w) => w.id === c.id);
+      if (target) target.comentario = c.comentario;
+    }
   } catch (err) {
-    console.error("gerarManchete falhou:", err);
+    console.error("gerarAvaliacao falhou:", err);
     manchete = `${nome}, ${tier.title}! ${tier.subtitle}.`;
   }
 
