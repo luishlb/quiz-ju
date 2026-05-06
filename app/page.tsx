@@ -27,14 +27,14 @@ export default function Landing() {
             ⭐
           </span>
 
-          <div className="polaroid rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+          <div className="magazine rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
             <Image
               src="/capa.jpg"
               alt="Capa de revista Capricho — Edição Especial Ju Faz 40"
               width={941}
               height={1672}
               priority
-              className="w-full h-auto rounded-sm"
+              className="w-full h-auto block"
             />
           </div>
         </div>

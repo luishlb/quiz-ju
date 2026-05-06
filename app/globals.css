@@ -64,3 +64,23 @@ body {
   background: rgba(255, 105, 180, 0.7);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
+
+/* Capa de revista — páginas empilhadas embaixo.
+ * Cada par de sombras é uma "página": a primeira (spread -1) é o creme
+ * do papel inset, a segunda (spread 0) é a linha de sombra da borda. */
+.magazine {
+  position: relative;
+  background: #fff;
+  box-shadow:
+    /* página 1 (mais próxima da capa) */
+    3px 3px 0 -1px #fbf3e2,
+    3px 3px 0 0 rgba(0, 0, 0, 0.18),
+    /* página 2 */
+    7px 7px 0 -1px #f5ead3,
+    7px 7px 0 0 rgba(0, 0, 0, 0.15),
+    /* página 3 (mais funda) */
+    11px 11px 0 -1px #efe2c5,
+    11px 11px 0 0 rgba(0, 0, 0, 0.12),
+    /* peso geral da revista na superfície */
+    14px 18px 32px rgba(0, 0, 0, 0.28);
+}
