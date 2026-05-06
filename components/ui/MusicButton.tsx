@@ -16,7 +16,13 @@ import { useEffect, useRef, useState } from "react";
  */
 const SONG_POOL: ReadonlyArray<{ id: string; title: string }> = [
   { id: "RsZS-JmzEUw", title: "Erasure - A Little Respect" },
-  // ↑ adicione mais aqui no formato acima ↑
+  { id: "4fndeDfaWCg", title: "Backstreet Boys - I Want It That Way" },
+  { id: "Eo-KmOd3i7s", title: "*NSYNC - Bye Bye Bye" },
+  { id: "V_2yPZRTjOM", title: "The Calling - Wherever You Will Go" },
+  { id: "NHozn0YXAeE", title: "Hanson - MMMBop" },
+  { id: "9Ht5RZpzPqw", title: "Blink 182 - All The Small Things" },
+  { id: "bce4nT684wA", title: "Offspring - Pretty Fly (For a White Guy)" },
+  { id: "MPDjwldKwIY", title: "Legião Urbana - Tempo Perdido" },
 ];
 
 declare global {
