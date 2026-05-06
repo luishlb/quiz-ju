@@ -18,6 +18,10 @@ type AvaliacaoResp = {
   score: number;
   total: number;
   tier: TitleTier;
+  /** Título personalizado pela IA (ou fallback do tier) */
+  titulo: string;
+  /** Subtítulo personalizado pela IA (ou fallback do tier) */
+  subtitulo: string;
   manchete: string;
   wrong: WrongItem[];
 };
@@ -104,11 +108,11 @@ function Erro({ msg }: { msg: string }) {
 }
 
 function Resultado({ data }: { data: AvaliacaoResp }) {
-  const { score, total, tier, manchete, wrong } = data;
+  const { score, total, tier, titulo, subtitulo, manchete, wrong } = data;
   const pct = Math.round((score / total) * 100);
   const nome = typeof window !== "undefined" ? getNome() ?? "amigx" : "amigx";
 
-  const shareText = `Acabei de fazer o quiz "Você é amiga(o) de verdade da Ju?" e tirei ${score}/${total} — ${tier.title} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
+  const shareText = `Acabei de fazer o quiz "Você é amiga(o) de verdade da Ju?" e tirei ${score}/${total} — ${titulo} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
   const wppHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (
@@ -127,11 +131,11 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
         >
           {tier.emoji}
         </motion.span>
-        <h1 className="font-bubble text-rosa-choque text-3xl sm:text-4xl text-center leading-tight">
-          {tier.title}
+        <h1 className="font-bubble text-rosa-choque text-3xl sm:text-4xl text-center leading-tight uppercase">
+          {titulo}
         </h1>
         <p className="font-display text-preto-revista/70 text-center italic">
-          {tier.subtitle}
+          {subtitulo}
         </p>
 
         {/* Score grande */}

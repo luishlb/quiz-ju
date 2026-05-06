@@ -146,6 +146,8 @@ export async function POST(request: NextRequest) {
   }));
 
   let manchete = "";
+  let titulo = tier.title; // fallback estático
+  let subtitulo = tier.subtitle;
   try {
     const avaliacao = await gerarAvaliacao(
       {
@@ -161,6 +163,8 @@ export async function POST(request: NextRequest) {
       errosParaIA,
     );
     manchete = avaliacao.manchete;
+    if (avaliacao.titulo) titulo = avaliacao.titulo;
+    if (avaliacao.subtitulo) subtitulo = avaliacao.subtitulo;
 
     // Anexa cada comentário ao erro correspondente
     for (const c of avaliacao.comentarios) {
@@ -175,7 +179,9 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     score,
     total,
-    tier,
+    tier, // ainda usado pra emoji + cor
+    titulo,
+    subtitulo,
     manchete,
     wrong: wrongItems,
   });

@@ -106,6 +106,10 @@ export type ErroParaComentar = {
 };
 
 export type AvaliacaoIA = {
+  /** Rótulo curto MAIÚSCULO (2-4 palavras) gerado especificamente pra essa pessoa */
+  titulo: string;
+  /** Subtítulo de uma linha em lowercase, italic-feel, debochado */
+  subtitulo: string;
   manchete: string;
   comentarios: Array<{ id: string; comentario: string }>;
 };
@@ -117,8 +121,9 @@ export type AvaliacaoIA = {
  */
 const SYSTEM_INSTRUCTION = `
 Você é redator(a) da revista Capricho na sua melhor fase (1998-2008).
-A festa é de aniversário de 40 anos da Ju. Você está escrevendo o resultado
-de um quiz que cada amigo da Ju está fazendo — quanto cada um conhece ela.
+A festa é de aniversário de 40 anos da Ju (mulher, brasileira, Recife/PE).
+Você está escrevendo o resultado de um quiz que cada amigo da Ju está fazendo
+— quanto cada um conhece ela.
 
 PRIORIDADE NÚMERO 1: SER ENGRAÇADO. Humor leve, sacanagem amigável, deboche
 carinhoso, gírias dos anos 2000 ("rolou", "coisa fina", "tô passada", "que
@@ -126,19 +131,51 @@ mico", "afff", "nem"). Pode tirar onda da pontuação ruim, elogiar quem foi
 bem, provocar quem deu resposta meia-boca. Trate a pessoa direto pelo nome.
 NÃO seja chato, formal ou educado demais. Seja a melhor amiga das fofocas.
 
-VOCÊ DEVE PRODUZIR DOIS CAMPOS NO JSON DE RESPOSTA:
+==== INFERÊNCIA DE GÊNERO ====
+Olhe pro NOME e infira o gênero gramatical pra usar pronomes/adjetivos certos:
+- "Luis", "Carlos", "Bruno", "Pedro", "André" → masculino ("amigo", "ele")
+- "Maria", "Ana", "Joana", "Paula", "Bia" → feminino ("amiga", "ela")
+- "Alex", "Sam", "Lu", nomes neutros ou ambíguos → use linguagem neutra
+  ("essa pessoa", "amigx", troque "amiga/amigo" por "BFF", "best", "parça",
+  "cúmplice", "presença confirmada" etc — opções que não marcam gênero)
 
-1) "manchete": parágrafo único de 3 a 5 frases (50 a 90 palavras), começando
+NUNCA chame um homem de "amiga" ou uma mulher de "amigo". É falha grave.
+
+==== ESTRUTURA DA RESPOSTA (JSON) ====
+Você DEVE produzir 4 campos:
+
+1) "titulo": rótulo MAIÚSCULO de 2 a 4 palavras, ÚNICO pra essa pessoa.
+   NÃO usar "AMIGA/AMIGO DE VERDADE", "BFF NOTA 10" ou outros clichês.
+   Tem que ser específico, debochado, condizente com a faixa do score.
+   Use a tabela abaixo como guia (nunca repita os exemplos):
+
+   - Score 0-2:   gabaritou ao contrário. Tom: escárnio gentil.
+                  Ex: "INTRUSO NA FESTA" / "QUEM CONVIDOU?" / "ZERO BALA"
+   - Score 3-7:   errou demais. Tom: provocação direta.
+                  Ex: "PARÇA DE OUVIDO" / "SUMIU ANOS 2010" / "AMIGO DE LISTA"
+   - Score 8-13:  metade-metade. Tom: deboche amigável.
+                  Ex: "MEIA-BOCA OFICIAL" / "BEST DE BIRTHDAY" / "ALGUMA INTIMIDADE"
+   - Score 14-18: foi bem. Tom: elogio com pegadinha.
+                  Ex: "GUARDA-COSTAS DA JU" / "CÚMPLICE DE FOFOCA" / "QUASE BFF"
+   - Score 19-22: gabaritou. Tom: elogio com hipérbole / suspeita.
+                  Ex: "STALKER OFICIAL" / "ARQUIVO VIVO" / "DEMERIT GÊMEA"
+
+   IMPORTANTE: cria um título NOVO. Não use os exemplos acima literalmente.
+
+2) "subtitulo": uma frase em LOWERCASE, italic-feel, debochada,
+   máximo 8 palavras. Ex: "vc decora o cardápio dela há 20 anos",
+   "presença em festa, ausência no detalhe", "quase quase, quem sabe em 2030".
+
+3) "manchete": parágrafo único de 3 a 5 frases (50 a 90 palavras), começando
    com o nome da pessoa. Comente o desempenho geral, incorpore as respostas
    abertas (palavra/frase/música/recado) quando der pra fazer piada. Se o
    recado for genérico, tira onda. Sem aspas, sem markdown, sem emojis em
    excesso (1-2 no total).
 
-2) "comentarios": array de objetos {id, comentario} — UM comentário curto
-   pra CADA pergunta errada listada no input. Cada comentário tem 1-2 frases
-   curtas (máximo 25 palavras), revelando a resposta correta de um jeito
-   ENGRAÇADO. Não use aspas. Não use o nome da pessoa repetidas vezes (já tá
-   na manchete). Pode falar diretamente com a pessoa ("achou que era...?").
+4) "comentarios": array de {id, comentario} — UM comentário pra CADA pergunta
+   errada listada no input. Cada comentário tem 1-2 frases curtas (até 25
+   palavras), revelando a resposta correta de um jeito ENGRAÇADO. Pode falar
+   direto com a pessoa ("achou que era...?", "sério mesmo??"). Sem aspas.
 
 EXEMPLOS de tom dos comentários (não copiar literalmente):
 - "Era 1,49m. A Ju é baixinha sim, e se vinga usando salto de 12cm em foto."
@@ -150,24 +187,24 @@ EXEMPLOS de tom dos comentários (não copiar literalmente):
 
 EXEMPLOS de manchete (não copiar literalmente):
 
-[Score alto, recado fofo]
-Maria, você é praticamente a outra metade da Ju — sabe a altura, sabe a banda,
+[Score alto, homem, recado fofo]
+Bruno, você praticamente é a outra metade da Ju — sabe a altura, sabe a banda,
 sabe até o nick do mIRC (vergonha alheia, parabéns). Esse "amizade que atravessa
 décadas" aí no recado foi de chorar, mas a gente sabe que você tá puxando saco
-porque ainda quer carona pra Boa Viagem. Ju ❤ vc, mas anota: a Ju confere
+porque ainda quer carona pra Boa Viagem. A Ju te ama, mas anota: ela confere
 lealdade no detalhe. ✨
 
-[Score médio, palavra criativa]
-Joana, "caótica" como definição da Ju? Tá certo, ponto pra você por honestidade
+[Score médio, mulher, palavra criativa]
+Joana, "caótica" como definição da Ju? Tá certa, ponto pra você por honestidade
 brutal. Mas você furou em pergunta que TODO MUNDO sabe — sério, achou que a
-viagem marcante foi Disney? A Ju nem curte rato gigante. Nota: amiga de
-quartel, presença confirmada, mas tem dever de casa antes do dia 24.
+viagem marcante foi Disney? A Ju nem curte rato gigante. Nota: cúmplice de
+festa confirmada, mas tem dever de casa antes do dia 24.
 
-[Score baixo, recado genérico]
+[Score baixo, homem, recado genérico]
 Carlos, parabéns pela coragem de aparecer aqui. "Feliz aniversário amiga" — foi
 isso? Foi ISSO?? A Ju tá te xingando em pensamento agora e tem razão. Sua
 única salvação é trazer presente bom dia 24, e olha que tem que ser MUITO bom
-pra compensar esse mico aqui.
+pra compensar esse mico.
 `;
 
 export async function gerarAvaliacao(
@@ -186,11 +223,11 @@ DADOS DESSA PESSOA:
 - Música que define a Ju: ${input.musicaJu ?? "(não respondeu)"}
 - Recado pra Ju nos 40 anos: ${input.recado ?? "(não respondeu)"}
 
-PERGUNTAS QUE ELA ERROU (gerar 1 comentário pra cada, com o "id" exato):
+PERGUNTAS QUE ESSA PESSOA ERROU (gerar 1 comentário pra cada, com o "id" exato):
 ${erros.length === 0 ? "(nenhuma — gabaritou)" : JSON.stringify(erros, null, 2)}
 
-Devolva APENAS o JSON com {manchete, comentarios}. Cada comentário deve usar
-o mesmo "id" do erro correspondente.
+Devolva APENAS o JSON com {titulo, subtitulo, manchete, comentarios}.
+Cada comentário deve usar o mesmo "id" do erro correspondente.
 `;
 
   const response = await ai.models.generateContent({
@@ -204,6 +241,8 @@ o mesmo "id" do erro correspondente.
       responseSchema: {
         type: Type.OBJECT,
         properties: {
+          titulo: { type: Type.STRING },
+          subtitulo: { type: Type.STRING },
           manchete: { type: Type.STRING },
           comentarios: {
             type: Type.ARRAY,
@@ -217,7 +256,7 @@ o mesmo "id" do erro correspondente.
             },
           },
         },
-        required: ["manchete", "comentarios"],
+        required: ["titulo", "subtitulo", "manchete", "comentarios"],
       },
     },
   });
@@ -226,10 +265,12 @@ o mesmo "id" do erro correspondente.
   try {
     const parsed = JSON.parse(txt) as AvaliacaoIA;
     return {
+      titulo: parsed.titulo?.trim() ?? "",
+      subtitulo: parsed.subtitulo?.trim() ?? "",
       manchete: parsed.manchete?.trim() ?? "",
       comentarios: Array.isArray(parsed.comentarios) ? parsed.comentarios : [],
     };
   } catch {
-    return { manchete: "", comentarios: [] };
+    return { titulo: "", subtitulo: "", manchete: "", comentarios: [] };
   }
 }
