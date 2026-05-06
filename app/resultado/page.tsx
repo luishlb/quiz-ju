@@ -1,9 +1,224 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { TitleTier } from "@/lib/titles";
+import { getAnswers, getNome } from "@/lib/storage";
+
+type WrongItem = {
+  id: string;
+  pergunta: string;
+  respostaUsuario: string;
+  respostaCerta: string;
+};
+
+type AvaliacaoResp = {
+  score: number;
+  total: number;
+  tier: TitleTier;
+  manchete: string;
+  wrong: WrongItem[];
+};
+
 export default function ResultadoPage() {
+  const router = useRouter();
+  const [estado, setEstado] = useState<"calculando" | "pronto" | "erro">("calculando");
+  const [data, setData] = useState<AvaliacaoResp | null>(null);
+  const [erro, setErro] = useState<string>("");
+
+  useEffect(() => {
+    const nome = getNome();
+    const respostas = getAnswers();
+    if (!nome) {
+      router.replace("/");
+      return;
+    }
+    if (Object.keys(respostas).length === 0) {
+      router.replace("/quiz");
+      return;
+    }
+
+    fetch("/api/avaliar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, respostas }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return (await r.json()) as AvaliacaoResp;
+      })
+      .then((j) => {
+        setData(j);
+        setEstado("pronto");
+      })
+      .catch((e: unknown) => {
+        setErro(e instanceof Error ? e.message : "Falha ao avaliar");
+        setEstado("erro");
+      });
+  }, [router]);
+
+  if (estado === "calculando") return <Calculando />;
+  if (estado === "erro") return <Erro msg={erro} />;
+  if (!data) return null;
+  return <Resultado data={data} />;
+}
+
+function Calculando() {
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-6 text-center">
-      <h1 className="font-bubble text-rosa-choque text-3xl">RESULTADO</h1>
-      <p className="text-preto-revista/70 italic">
-        Tela de resultado personalizada vem na Fase 4.
+    <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-8 text-center">
+      <motion.div
+        animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+        className="text-7xl"
+      >
+        💖
+      </motion.div>
+      <p className="font-display text-rosa-choque text-2xl uppercase tracking-wider">
+        Calculando seu resultado...
+      </p>
+      <p className="font-body text-preto-revista/60">
+        Conferindo se você é amiga(o) de verdade da Ju 💎
+      </p>
+    </main>
+  );
+}
+
+function Erro({ msg }: { msg: string }) {
+  return (
+    <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-4 text-center">
+      <p className="text-7xl">😬</p>
+      <h1 className="font-bubble text-rosa-choque text-3xl">deu ruim</h1>
+      <p className="font-body text-preto-revista/70 max-w-md">
+        Não consegui calcular seu resultado: <code className="bg-white/60 px-2 rounded">{msg}</code>
+      </p>
+      <a
+        href="/quiz"
+        className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white"
+      >
+        ← Voltar pro quiz
+      </a>
+    </main>
+  );
+}
+
+function Resultado({ data }: { data: AvaliacaoResp }) {
+  const { score, total, tier, manchete, wrong } = data;
+  const pct = Math.round((score / total) * 100);
+  const nome = typeof window !== "undefined" ? getNome() ?? "amigx" : "amigx";
+
+  const shareText = `Acabei de fazer o quiz "Você é amiga(o) de verdade da Ju?" e tirei ${score}/${total} — ${tier.title} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
+  const wppHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+
+  return (
+    <main className="flex-1 flex flex-col items-center px-5 py-8 gap-6 max-w-xl mx-auto w-full">
+      {/* Tier card */}
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0, rotate: -8 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 180, damping: 14 }}
+        className="bg-white border-4 border-rosa-bubble rounded-3xl p-6 sm:p-8 shadow-[6px_6px_0_rgba(199,125,255,0.4)] flex flex-col items-center gap-3 w-full"
+      >
+        <motion.span
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 6, -6, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="text-7xl"
+        >
+          {tier.emoji}
+        </motion.span>
+        <h1 className="font-bubble text-rosa-choque text-3xl sm:text-4xl text-center leading-tight">
+          {tier.title}
+        </h1>
+        <p className="font-display text-preto-revista/70 text-center italic">
+          {tier.subtitle}
+        </p>
+
+        {/* Score grande */}
+        <div className="mt-2 flex items-baseline gap-2">
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+            className="font-bubble text-6xl sm:text-7xl text-rosa-choque"
+          >
+            {score}
+          </motion.span>
+          <span className="font-display text-2xl text-preto-revista/50">
+            / {total}
+          </span>
+        </div>
+        <p className="font-display text-sm uppercase tracking-wider text-lilas">
+          {pct}% de acertos
+        </p>
+      </motion.div>
+
+      {/* Manchete IA */}
+      {manchete && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+          className="bg-amarelo-glitter/30 border-2 border-amarelo-glitter rounded-2xl p-5 w-full"
+        >
+          <p className="font-display text-xs uppercase tracking-widest text-rosa-choque mb-2">
+            ✨ manchete da revista ✨
+          </p>
+          <p className="font-display text-preto-revista text-lg leading-snug">
+            {manchete}
+          </p>
+        </motion.div>
+      )}
+
+      {/* Lista de erros */}
+      {wrong.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="w-full flex flex-col gap-3"
+        >
+          <h2 className="font-bubble text-rosa-choque text-xl text-center">
+            o que escapou de você 👀
+          </h2>
+          <ul className="flex flex-col gap-2">
+            {wrong.map((w) => (
+              <li
+                key={w.id}
+                className="bg-white/85 border-2 border-rosa-pastel rounded-xl p-4 text-sm"
+              >
+                <p className="font-display text-preto-revista">{w.pergunta}</p>
+                <p className="font-body text-preto-revista/60 mt-1">
+                  você: <span className="line-through">{w.respostaUsuario}</span>
+                </p>
+                <p className="font-body text-rosa-choque">
+                  resposta: <strong>{w.respostaCerta}</strong>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
+
+      {/* CTAs */}
+      <div className="flex flex-col gap-3 w-full mt-2">
+        <a
+          href={wppHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-rosa-choque text-white font-bubble text-lg tracking-wide px-6 py-4 rounded-full shadow-[4px_4px_0_rgba(0,0,0,0.25)] hover:scale-[1.02] transition-transform text-center"
+        >
+          📲 Compartilhar no WhatsApp
+        </a>
+        <a
+          href="/"
+          className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white text-center"
+        >
+          🏠 voltar pro início
+        </a>
+      </div>
+
+      <p className="text-center mt-2 text-[11px] text-preto-revista/50 font-display tracking-wide">
+        feito com 💖 pra Ju, edição limitada de 40 anos · {nome}
       </p>
     </main>
   );

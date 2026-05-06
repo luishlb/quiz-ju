@@ -55,9 +55,10 @@ export type Question = MultipleChoice | ShortAnswer | OpenShort | OpenLong;
 export const QUESTIONS: Question[] = [
   // ── Seção 1 — O básico
   {
-    id: "q01", section: 1, type: "short", scores: true,
+    id: "q01", section: 1, type: "multiple", scores: true,
     prompt: "Qual a altura da Ju?",
-    aliases: ["1,49m", "1,49", "1.49", "1.49m", "149", "1,49 m", "1.49 m", "149cm", "1m49"],
+    options: ["1,47m", "1,49m", "1,52m", "1,55m", "1,58m"],
+    correctIndex: 1,
   },
   {
     id: "q02", section: 1, type: "multiple", scores: true,
@@ -100,19 +101,24 @@ export const QUESTIONS: Question[] = [
     correctIndex: 2,
   },
   {
-    id: "q09", section: 2, type: "short", scores: true,
+    id: "q09", section: 2, type: "multiple", scores: true,
     prompt: "Em que ano ela se formou na faculdade?",
-    aliases: ["2013"],
+    options: ["2011", "2012", "2013", "2014", "2015"],
+    correctIndex: 2,
   },
   {
     id: "q10", section: 2, type: "short", scores: true,
     prompt: "Onde ela conheceu o Breno?",
-    aliases: ["atual", "academia atual", "academia", "no atual"],
+    aliases: [
+      "atual", "colegio atual", "colégio atual", "no atual",
+      "no colegio atual", "no colégio atual", "atual mesmo",
+    ],
   },
   {
-    id: "q11", section: 2, type: "short", scores: true,
+    id: "q11", section: 2, type: "multiple", scores: true,
     prompt: "Em que ano ela conheceu o Breno?",
-    aliases: ["2004"],
+    options: ["2002", "2003", "2004", "2005", "2006"],
+    correctIndex: 2,
   },
 
   // ── Seção 3 — Gostos
@@ -122,9 +128,16 @@ export const QUESTIONS: Question[] = [
     aliases: ["chocolate"],
   },
   {
-    id: "q13", section: 3, type: "short", scores: true,
+    id: "q13", section: 3, type: "multiple", scores: true,
     prompt: "Qual a banda que ela mais ouvia na adolescência?",
-    aliases: ["backstreet boys", "bsb", "backstreet"],
+    options: [
+      "Backstreet Boys",
+      "NSync",
+      "Hanson",
+      "Britney Spears",
+      "Sandy & Junior",
+    ],
+    correctIndex: 0,
   },
   {
     id: "q14", section: 3, type: "short", scores: true,
@@ -132,9 +145,16 @@ export const QUESTIONS: Question[] = [
     aliases: ["a little respect", "erasure", "little respect", "a little respect erasure"],
   },
   {
-    id: "q15", section: 3, type: "short", scores: true,
+    id: "q15", section: 3, type: "multiple", scores: true,
     prompt: "Qual a série que a Ju assistiu mais vezes na vida?",
-    aliases: ["friends"],
+    options: [
+      "Friends",
+      "How I Met Your Mother",
+      "Sex and the City",
+      "Seinfeld",
+      "Grey's Anatomy",
+    ],
+    correctIndex: 0,
   },
   {
     id: "q16", section: 3, type: "short", scores: true,
@@ -142,9 +162,10 @@ export const QUESTIONS: Question[] = [
     keywords: ["controle", "mandar", "mandona", "ciumenta", "ciume", "ciúme"],
   },
   {
-    id: "q17", section: 3, type: "short", scores: true,
+    id: "q17", section: 3, type: "multiple", scores: true,
     prompt: "Qual a maior fobia dela?",
-    aliases: ["barata", "baratas"],
+    options: ["Baratas", "Aranhas", "Altura", "Palhaço", "Lugar fechado"],
+    correctIndex: 0,
   },
   {
     id: "q18", section: 3, type: "short", scores: true,
@@ -154,9 +175,10 @@ export const QUESTIONS: Question[] = [
 
   // ── Seção 4 — Memórias
   {
-    id: "q19", section: 4, type: "short", scores: true,
+    id: "q19", section: 4, type: "multiple", scores: true,
     prompt: "Qual a viagem mais marcante que a Ju já fez?",
-    aliases: ["chile", "chile 2016", "santiago", "santiago do chile"],
+    options: ["Chile", "Argentina", "Europa", "Estados Unidos", "Disney"],
+    correctIndex: 0,
   },
   {
     id: "q20", section: 4, type: "short", scores: true,
