@@ -110,7 +110,10 @@ export type AvaliacaoIA = {
   titulo: string;
   /** Subtítulo de uma linha em lowercase, italic-feel, debochado */
   subtitulo: string;
+  /** Manchete em SEGUNDA pessoa, dirigida à pessoa que tá lendo (tela /resultado) */
   manchete: string;
+  /** Manchete reescrita em PRIMEIRA pessoa, pra ela postar como se estivesse falando do próprio resultado (image share) */
+  manchetePost: string;
   comentarios: Array<{ id: string; comentario: string }>;
 };
 
@@ -130,6 +133,17 @@ carinhoso, gírias dos anos 2000 ("rolou", "coisa fina", "tô passada", "que
 mico", "afff", "nem"). Pode tirar onda da pontuação ruim, elogiar quem foi
 bem, provocar quem deu resposta meia-boca. Trate a pessoa direto pelo nome.
 NÃO seja chato, formal ou educado demais. Seja a melhor amiga das fofocas.
+
+==== REGRA INVIOLÁVEL — JU É CASADA ====
+A Ju é casada com o Breno (paquera de colégio que virou marido). É TERMINANTEMENTE
+PROIBIDO insinuar romance, paquera, atração, "ficar", "rolar", "crush",
+"casamento", "ser a outra metade" em sentido amoroso, "a Ju seria sua",
+"você tinha chance", ou qualquer ambiguidade sexual/romântica entre a Ju e a
+PESSOA que está fazendo o quiz — não importa se a pessoa é homem, mulher ou
+não-binária. Amizade pura, fofoca, lealdade, festa — nunca romance.
+"A Ju te ama" só se ficar inequivocamente claro que é amizade.
+Se hesitar, pende sempre pra deboche de amizade. Quem é o par romântico
+dela é o BRENO, ponto final.
 
 ==== INFERÊNCIA DE GÊNERO ====
 Olhe pro NOME e infira o gênero gramatical pra usar pronomes/adjetivos certos:
@@ -167,12 +181,20 @@ Você DEVE produzir 4 campos:
    "presença em festa, ausência no detalhe", "quase quase, quem sabe em 2030".
 
 3) "manchete": parágrafo único de 3 a 5 frases (50 a 90 palavras), começando
-   com o nome da pessoa. Comente o desempenho geral, incorpore as respostas
-   abertas (palavra/frase/música/recado) quando der pra fazer piada. Se o
-   recado for genérico, tira onda. Sem aspas, sem markdown, sem emojis em
-   excesso (1-2 no total).
+   com o nome da pessoa. Em SEGUNDA pessoa — você está falando COM a pessoa
+   ("Luis, você foi praticamente..."). Esse texto aparece na tela de resultado
+   pra própria pessoa ler. Comente o desempenho geral, incorpore as respostas
+   abertas quando der pra fazer piada. Sem aspas, sem markdown, 1-2 emojis no
+   total. NÃO insinue romance com a Ju — ela é casada (ver regra acima).
 
-4) "comentarios": array de {id, comentario} — UM comentário pra CADA pergunta
+4) "manchetePost": MESMO conteúdo da manchete, mas reescrita em PRIMEIRA pessoa
+   como se a pessoa estivesse postando o próprio resultado pros seguidores
+   ("Eu fui praticamente a outra metade...", "Tirei X de Y e..."). Esse texto
+   vai pra dentro de uma imagem de compartilhamento (Story IG/WhatsApp).
+   Mais curto: 2-3 frases (30-50 palavras). Não comece com o nome (a pessoa
+   não vai dizer o próprio nome no post dela). Sem aspas, sem markdown.
+
+5) "comentarios": array de {id, comentario} — UM comentário pra CADA pergunta
    errada listada no input. Cada comentário tem 1-2 frases curtas (até 25
    palavras), revelando a resposta correta de um jeito ENGRAÇADO. Pode falar
    direto com a pessoa ("achou que era...?", "sério mesmo??"). Sem aspas.
@@ -185,26 +207,39 @@ EXEMPLOS de tom dos comentários (não copiar literalmente):
 - "Era Friends. Como assim você não sabia? Ela cita Chandler em conversa séria."
 - "Era 2004. Tava na época do Atual, MSN bombando, fla-flu de paquera."
 
-EXEMPLOS de manchete (não copiar literalmente):
+EXEMPLOS de manchete (segunda pessoa) — não copiar literalmente:
 
 [Score alto, homem, recado fofo]
-Bruno, você praticamente é a outra metade da Ju — sabe a altura, sabe a banda,
-sabe até o nick do mIRC (vergonha alheia, parabéns). Esse "amizade que atravessa
-décadas" aí no recado foi de chorar, mas a gente sabe que você tá puxando saco
-porque ainda quer carona pra Boa Viagem. A Ju te ama, mas anota: ela confere
-lealdade no detalhe. ✨
+Bruno, você praticamente é o cúmplice oficial da Ju nessa amizade — sabe a
+altura, sabe a banda, sabe até o nick do mIRC (vergonha alheia, parabéns).
+Esse "amizade que atravessa décadas" aí no recado foi de chorar, mas a gente
+sabe que você tá puxando saco porque ainda quer carona pra Boa Viagem. ✨
 
 [Score médio, mulher, palavra criativa]
 Joana, "caótica" como definição da Ju? Tá certa, ponto pra você por honestidade
 brutal. Mas você furou em pergunta que TODO MUNDO sabe — sério, achou que a
-viagem marcante foi Disney? A Ju nem curte rato gigante. Nota: cúmplice de
-festa confirmada, mas tem dever de casa antes do dia 24.
+viagem marcante foi Disney? A Ju nem curte rato gigante. Cúmplice de festa
+confirmada, mas tem dever de casa antes do dia 24.
 
 [Score baixo, homem, recado genérico]
 Carlos, parabéns pela coragem de aparecer aqui. "Feliz aniversário amiga" — foi
 isso? Foi ISSO?? A Ju tá te xingando em pensamento agora e tem razão. Sua
 única salvação é trazer presente bom dia 24, e olha que tem que ser MUITO bom
 pra compensar esse mico.
+
+EXEMPLOS de manchetePost (primeira pessoa, mais curta) — não copiar literalmente:
+
+[Score alto, homem]
+Cravei como cúmplice oficial da Ju — sei a altura, a banda, até o nick do mIRC.
+Vergonha alheia? Sim. Lealdade? Inquestionável. ✨
+
+[Score médio, mulher]
+Tirei 14 de 22 no quiz da Ju e ainda achei que a viagem marcante dela foi
+Disney. Promessa: até dia 24 eu estudo o material.
+
+[Score baixo, homem]
+Tirei nota de banco de praça no quiz da Ju, mas vou compensar com presente bom
+dia 24. Promessa de amigo, fé.
 `;
 
 export async function gerarAvaliacao(
@@ -244,6 +279,7 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
           titulo: { type: Type.STRING },
           subtitulo: { type: Type.STRING },
           manchete: { type: Type.STRING },
+          manchetePost: { type: Type.STRING },
           comentarios: {
             type: Type.ARRAY,
             items: {
@@ -256,7 +292,7 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
             },
           },
         },
-        required: ["titulo", "subtitulo", "manchete", "comentarios"],
+        required: ["titulo", "subtitulo", "manchete", "manchetePost", "comentarios"],
       },
     },
   });
@@ -268,9 +304,10 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
       titulo: parsed.titulo?.trim() ?? "",
       subtitulo: parsed.subtitulo?.trim() ?? "",
       manchete: parsed.manchete?.trim() ?? "",
+      manchetePost: parsed.manchetePost?.trim() ?? "",
       comentarios: Array.isArray(parsed.comentarios) ? parsed.comentarios : [],
     };
   } catch {
-    return { titulo: "", subtitulo: "", manchete: "", comentarios: [] };
+    return { titulo: "", subtitulo: "", manchete: "", manchetePost: "", comentarios: [] };
   }
 }

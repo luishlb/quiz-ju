@@ -146,6 +146,7 @@ export async function POST(request: NextRequest) {
   }));
 
   let manchete = "";
+  let manchetePost = "";
   let titulo = tier.title; // fallback estático
   let subtitulo = tier.subtitle;
   try {
@@ -163,6 +164,7 @@ export async function POST(request: NextRequest) {
       errosParaIA,
     );
     manchete = avaliacao.manchete;
+    manchetePost = avaliacao.manchetePost;
     if (avaliacao.titulo) titulo = avaliacao.titulo;
     if (avaliacao.subtitulo) subtitulo = avaliacao.subtitulo;
 
@@ -174,15 +176,17 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("gerarAvaliacao falhou:", err);
     manchete = `${nome}, ${tier.title}! ${tier.subtitle}.`;
+    manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${tier.title}!`;
   }
 
   return NextResponse.json({
     score,
     total,
-    tier, // ainda usado pra emoji + cor
+    tier, // emoji + cor
     titulo,
     subtitulo,
     manchete,
+    manchetePost,
     wrong: wrongItems,
   });
 }

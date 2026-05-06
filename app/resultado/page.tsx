@@ -22,7 +22,10 @@ type AvaliacaoResp = {
   titulo: string;
   /** Subtítulo personalizado pela IA (ou fallback do tier) */
   subtitulo: string;
+  /** Manchete em 2ª pessoa pra mostrar na tela */
   manchete: string;
+  /** Manchete em 1ª pessoa pra ir na imagem de share */
+  manchetePost: string;
   wrong: WrongItem[];
 };
 
@@ -108,11 +111,22 @@ function Erro({ msg }: { msg: string }) {
 }
 
 function Resultado({ data }: { data: AvaliacaoResp }) {
-  const { score, total, tier, titulo, subtitulo, manchete, wrong } = data;
+  const { score, total, tier, titulo, subtitulo, manchete, manchetePost, wrong } = data;
   const pct = Math.round((score / total) * 100);
   const nome = typeof window !== "undefined" ? getNome() ?? "amigx" : "amigx";
 
-  const shareText = `Acabei de fazer o quiz "Você é amiga(o) de verdade da Ju?" e tirei ${score}/${total} — ${titulo} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
+  // Monta URL da imagem OG com todos os parâmetros pra renderização server-side
+  const ogParams = new URLSearchParams({
+    titulo,
+    subtitulo,
+    score: String(score),
+    total: String(total),
+    emoji: tier.emoji,
+    manchete: manchetePost,
+  });
+  const ogUrl = `/api/og?${ogParams.toString()}`;
+
+  const shareText = `Acabei de fazer o quiz "Você é amigo(a) de verdade da Ju?" e tirei ${score}/${total} — ${titulo} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
   const wppHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (
@@ -210,26 +224,126 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
       )}
 
       {/* CTAs */}
-      <div className="flex flex-col gap-3 w-full mt-2">
-        <a
-          href={wppHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-rosa-choque text-white font-bubble text-lg tracking-wide px-6 py-4 rounded-full shadow-[4px_4px_0_rgba(0,0,0,0.25)] hover:scale-[1.02] transition-transform text-center"
-        >
-          📲 Compartilhar no WhatsApp
-        </a>
-        <a
-          href="/"
-          className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white text-center"
-        >
-          🏠 voltar pro início
-        </a>
-      </div>
+      <ShareControls
+        ogUrl={ogUrl}
+        shareText={shareText}
+        wppHref={wppHref}
+        nome={nome}
+      />
+      <a
+        href="/"
+        className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white text-center w-full"
+      >
+        🏠 voltar pro início
+      </a>
 
       <p className="text-center mt-2 text-[11px] text-preto-revista/50 font-display tracking-wide">
         feito com 💖 pra Ju, edição limitada de 40 anos · {nome}
       </p>
     </main>
+  );
+}
+
+/**
+ * Botões de share com Web Share API (file share) + WhatsApp + download.
+ *
+ * - Mobile moderno: navigator.share({ files: [pngBlob], text }) abre a folha
+ *   nativa de compartilhar e a pessoa escolhe Instagram, WhatsApp etc.
+ * - Sem suporte a file share: cai pra `navigator.share({ text })` (texto-only)
+ *   OU pro link wa.me como último fallback.
+ * - Desktop: botão "baixar imagem" + abrir wa.me numa aba nova.
+ */
+function ShareControls({
+  ogUrl,
+  shareText,
+  wppHref,
+  nome,
+}: {
+  ogUrl: string;
+  shareText: string;
+  wppHref: string;
+  nome: string;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handleShare = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch(ogUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `quiz-da-ju-${nome}.png`, {
+        type: "image/png",
+      });
+
+      const nav = navigator as Navigator & {
+        canShare?: (data: ShareData) => boolean;
+      };
+
+      if (nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file], text: shareText });
+      } else if (nav.share) {
+        await nav.share({ text: shareText, url: window.location.origin });
+      } else {
+        // Desktop sem Web Share — força download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `quiz-da-ju-${nome}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("share falhou:", err);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3 w-full mt-2">
+      <button
+        type="button"
+        onClick={handleShare}
+        disabled={busy}
+        className="bg-rosa-choque text-white font-bubble text-lg tracking-wide px-6 py-4 rounded-full shadow-[4px_4px_0_rgba(0,0,0,0.25)] hover:scale-[1.02] transition-transform text-center disabled:opacity-60 disabled:cursor-wait"
+      >
+        {busy ? "🎀 gerando imagem..." : "📲 Compartilhar no Instagram/WhatsApp"}
+      </button>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setPreviewOpen((s) => !s)}
+          className="flex-1 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white"
+        >
+          {previewOpen ? "🙈 esconder" : "👀 ver prévia"}
+        </button>
+        <a
+          href={wppHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white text-center"
+        >
+          💬 só texto WhatsApp
+        </a>
+      </div>
+
+      {previewOpen && (
+        <div className="bg-white/85 rounded-2xl border-2 border-rosa-bubble p-3 mt-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ogUrl}
+            alt="Prévia do post"
+            className="w-full rounded-xl"
+            style={{ aspectRatio: "9/16", objectFit: "contain" }}
+          />
+          <p className="text-center mt-2 text-[11px] text-preto-revista/60 font-display">
+            é assim que vai aparecer no Story 📱
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
