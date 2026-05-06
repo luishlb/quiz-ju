@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
+/*
+ * Paleta Capricho anos 2000 + tipografia bubble.
+ * Cores acessíveis via classes Tailwind (ex: bg-rosa-choque, text-lilas).
+ */
+@theme {
+  --color-rosa-choque: #FF1493;
+  --color-rosa-bubble: #FF69B4;
+  --color-rosa-pastel: #FFB6E1;
+  --color-lilas: #C77DFF;
+  --color-amarelo-glitter: #FFD700;
+  --color-azul-neon: #00BFFF;
+  --color-preto-revista: #1A1A1A;
+
+  --font-bubble: var(--font-bungee);
+  --font-display: var(--font-lilita);
+  --font-body: var(--font-poppins);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFB6E1;
+  --foreground: #1A1A1A;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(255, 215, 0, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(199, 125, 255, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #FFB6E1 0%, #C77DFF 100%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Scrollbar rosa pra combinar com a vibe */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.3); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FF1493, #C77DFF);
+  border-radius: 6px;
+}
+
+/* Polaroid inclinada com fita crepe rosa em cima */
+.polaroid {
+  position: relative;
+  background: #fdf8f0;
+  padding: 12px 12px 56px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 90px;
+  height: 28px;
+  background: rgba(255, 105, 180, 0.7);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }

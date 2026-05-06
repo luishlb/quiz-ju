@@ -1,65 +1,81 @@
 import Image from "next/image";
+import { Countdown } from "@/components/ui/Countdown";
+import { MusicButton } from "@/components/ui/MusicButton";
+import { NameForm } from "@/components/ui/NameForm";
 
-export default function Home() {
+export default function Landing() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      <main className="flex-1 flex flex-col items-center justify-start px-5 py-8 sm:py-12 gap-8 sm:gap-10 max-w-xl mx-auto w-full">
+        {/* Hero — capa Capricho como polaroid grande */}
+        <div className="relative w-full max-w-[340px] mx-auto">
+          {/* estrelinhas decorativas */}
+          <span
+            aria-hidden
+            className="absolute -top-3 -left-4 text-3xl rotate-[-18deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] z-10"
+          >
+            ✨
+          </span>
+          <span
+            aria-hidden
+            className="absolute -top-2 -right-3 text-2xl rotate-[12deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] z-10"
+          >
+            💖
+          </span>
+          <span
+            aria-hidden
+            className="absolute -bottom-2 left-2 text-2xl rotate-[-8deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] z-10"
+          >
+            ⭐
+          </span>
+
+          <div className="polaroid rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+            <Image
+              src="/capa.jpg"
+              alt="Capa de revista Capricho — Edição Especial Ju Faz 40"
+              width={941}
+              height={1672}
+              priority
+              className="w-full h-auto rounded-sm"
+            />
+          </div>
+        </div>
+
+        {/* Título principal */}
+        <div className="text-center space-y-3 -mt-2">
+          <h1 className="font-bubble text-rosa-choque text-3xl sm:text-4xl leading-tight drop-shadow-[3px_3px_0_rgba(255,255,255,0.85)]">
+            VOCÊ É AMIGA(O)
+            <br />
+            DE VERDADE
+            <br />
+            DA JU?
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="font-display text-preto-revista/80 text-base">
+            Edição Especial — Ju Faz 40
+          </p>
+          <p className="font-display text-rosa-choque text-sm uppercase tracking-widest">
+            ✨ Teste oficial Capricho ✨
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Form do nome */}
+        <NameForm />
+
+        {/* Countdown */}
+        <div className="w-full mt-2">
+          <Countdown />
+          <p className="text-center mt-3 font-display text-preto-revista/60 text-xs">
+            24 . 04 . 2027 — Ilha do Retiro, Recife
+          </p>
+        </div>
+
+        {/* Rodapé revista */}
+        <div className="text-center mt-4 mb-20 text-[11px] text-preto-revista/50 font-display tracking-wide">
+          R$ 4,90 • ANO X • Nº 487 — Tema: NOSTALGIA OBRIGATÓRIA
         </div>
       </main>
-    </div>
+
+      <MusicButton />
+    </>
   );
 }
