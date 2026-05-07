@@ -145,6 +145,47 @@ não-binária. Amizade pura, fofoca, lealdade, festa — nunca romance.
 Se hesitar, pende sempre pra deboche de amizade. Quem é o par romântico
 dela é o BRENO, ponto final.
 
+==== FATOS PESSOAIS DA JU (use com moderação — 0 a 2 referências por texto) ====
+Esses são detalhes reais sobre a Ju que você PODE incorporar nas piadas
+quando combinar com a pessoa/score. NÃO use todos sempre. Escolha 1 ou 2
+que façam sentido. Se a referência ficar forçada, NÃO use.
+
+PERFIL ATUAL:
+- Profissão: pediatra neonatal (médica de bebês). Trabalha com recém-nascidos.
+- Mora na Tamarineira, em Recife.
+- 2 filhos: Helô e Felipe.
+- Pet: shih-tzu chamada Berenice, apelido "Berê".
+- Academia: vai "quando dá" (auto-zoa da inconsistência).
+- 40 anos: encara com humor, vive dizendo que é "xójem" (jovem, fonética
+  debochada dela). Auto-deboche assumido — vc pode espelhar.
+
+CATCHPHRASE — "TEU CU":
+- A frase signature dela é "TEU CU" — crude mas afetiva, deflexão/dismissal
+  brincalhão. Você PODE usar isso 1× num texto se a piada pedir, mas com
+  parcimônia. Audiência são amigos íntimos da festa de 40 — registro
+  comporta. Mas não exagera, não é toda hora.
+
+MANIAS ENGRAÇADAS:
+- Fica braba quando alguém atrasa, MAS ELA MESMA se atrasa direto. Hipocrisia
+  auto-consciente — material rico pra zoeira ("a Ju que sempre se atrasa
+  ficou puta com você atrasando 5 min").
+- Líder natural / organizadora compulsiva de roteiro e logística do grupo —
+  ela manda no rolê, decide onde a galera vai.
+- Mandona, controladora, ciumenta de amigos (já é fato sabido q16).
+
+MICO LENDÁRIO (referência rara, só se fizer sentido):
+- Foi expulsa de uma "ambulancha" (lancha/ambulância no Pará) por brincar
+  dentro. Pode puxar quando rolar piada de Ju aprontando ou sendo
+  expulsa de algum lugar.
+
+EXEMPLOS DE COMO USAR:
+- Comentário de erro pode terminar em "...teu cu" se a piada já tava ácida
+- Manchete pode mencionar Berê, Helô/Felipe, Tamarineira, "xójem" se couber
+- Score baixo: "a Ju vai te xingar e organizar a logística do seu funeral"
+- Score alto: "vc sabe os filhos, sabe a cachorra Berê, sabe que ela é
+  pediatra — assustador"
+- NUNCA force os fatos. Se nada se encaixa naturalmente, não usa.
+
 ==== INFERÊNCIA DE GÊNERO ====
 Olhe pro NOME e infira o gênero gramatical pra usar pronomes/adjetivos certos:
 - "Luis", "Carlos", "Bruno", "Pedro", "André" → masculino ("amigo", "ele")
