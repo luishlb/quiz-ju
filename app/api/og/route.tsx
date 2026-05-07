@@ -1,33 +1,38 @@
 /**
- * GET /api/og?nome=...&titulo=...&subtitulo=...&score=...&total=...&emoji=...&manchete=...
+ * GET /api/og?titulo=...&subtitulo=...&score=...&total=...&manchete=...
  *
- * Gera imagem 1080x1920 (Story IG/WhatsApp) com layout Capricho.
- * Server-side via next/og (Satori) — devolve PNG real, não HTML.
+ * Lê /public/post-bg.png como base (gerada externamente, layout Capricho
+ * Y2K com toda a decoração) e sobrepõe SÓ o texto dinâmico via Satori.
  *
- * Usado pelo botão "Compartilhar" da tela /resultado.
+ * Decisões de robustez:
+ *   - runtime nodejs (acesso direto ao filesystem, evita o cold-fetch do edge)
+ *   - sem textShadow multi-valor (foi o que quebrou a primeira versão)
+ *   - sem emojis renderizados (a base já tem decoração suficiente)
+ *   - absolute positioning das camadas de texto
  */
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
-// Paleta — espelha globals.css (Satori não suporta CSS variables)
+// Lê o BG uma vez no boot do worker e mantém em memória como data URL
+const BG_PATH = join(process.cwd(), "public", "post-bg.png");
+const BG_DATA_URL = `data:image/png;base64,${readFileSync(BG_PATH).toString("base64")}`;
+
 const ROSA_CHOQUE = "#FF1493";
-const ROSA_BUBBLE = "#FF69B4";
-const ROSA_PASTEL = "#FFB6E1";
 const LILAS = "#C77DFF";
-const AMARELO = "#FFD700";
-const PRETO_REVISTA = "#1A1A1A";
+const PRETO = "#1A1A1A";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const titulo = (searchParams.get("titulo") ?? "AMIGO DA JU").slice(0, 40);
-  const subtitulo = (searchParams.get("subtitulo") ?? "").slice(0, 80);
+  const titulo = (searchParams.get("titulo") ?? "AMIGO DA JU").slice(0, 36);
+  const subtitulo = (searchParams.get("subtitulo") ?? "").slice(0, 60);
   const score = searchParams.get("score") ?? "0";
   const total = searchParams.get("total") ?? "22";
-  const emoji = searchParams.get("emoji") ?? "💖";
-  const manchete = (searchParams.get("manchete") ?? "").slice(0, 280);
+  const manchete = (searchParams.get("manchete") ?? "").slice(0, 240);
 
   const pct = Math.round(
     (Number.parseInt(score, 10) / Number.parseInt(total, 10)) * 100,
@@ -40,83 +45,43 @@ export async function GET(request: NextRequest) {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundImage: `linear-gradient(180deg, ${ROSA_PASTEL} 0%, ${ROSA_BUBBLE} 50%, ${LILAS} 100%)`,
-          padding: "60px 50px",
+          position: "relative",
           fontFamily: "sans-serif",
-          color: PRETO_REVISTA,
         }}
       >
-        {/* Header — logo Capricho */}
-        <div
+        {/* Background — layout Capricho gerado externamente */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={BG_DATA_URL}
+          alt=""
+          width={1080}
+          height={1920}
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 16,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-              fontSize: 28,
-              color: ROSA_CHOQUE,
-              fontWeight: 800,
-              letterSpacing: 4,
-            }}
-          >
-            <span>✨</span>
-            <span>TESTE OFICIAL CAPRICHO</span>
-            <span>✨</span>
-          </div>
-          <div
-            style={{
-              fontSize: 96,
-              fontWeight: 900,
-              color: ROSA_CHOQUE,
-              textShadow: `4px 4px 0 #fff, 8px 8px 0 ${LILAS}`,
-              letterSpacing: 2,
-              textAlign: "center",
-              lineHeight: 1,
-            }}
-          >
-            JU FAZ 40
-          </div>
-          <div
-            style={{
-              fontSize: 32,
-              color: PRETO_REVISTA,
-              fontStyle: "italic",
-              textAlign: "center",
-            }}
-          >
-            Você é amigo(a) de verdade da Ju?
-          </div>
-        </div>
+        />
 
-        {/* Card central — emoji + título + score */}
+        {/* Bloco título + subtítulo (parte de cima do card creme) */}
         <div
           style={{
+            position: "absolute",
+            top: 620,
+            left: 100,
+            right: 100,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            backgroundColor: "rgba(255,255,255,0.92)",
-            border: `8px solid ${ROSA_BUBBLE}`,
-            borderRadius: 40,
-            padding: "60px 50px",
-            gap: 24,
-            boxShadow: `12px 12px 0 ${LILAS}`,
+            gap: 18,
           }}
         >
-          <div style={{ fontSize: 200, lineHeight: 1, display: "flex" }}>
-            {emoji}
-          </div>
           <div
             style={{
-              fontSize: 78,
+              fontSize: 72,
               fontWeight: 900,
               color: ROSA_CHOQUE,
               textAlign: "center",
@@ -130,28 +95,41 @@ export async function GET(request: NextRequest) {
           {subtitulo && (
             <div
               style={{
-                fontSize: 32,
-                color: `${PRETO_REVISTA}AA`,
+                fontSize: 30,
+                color: `${PRETO}AA`,
                 fontStyle: "italic",
                 textAlign: "center",
-                lineHeight: 1.2,
-                marginTop: -8,
+                lineHeight: 1.25,
               }}
             >
               {subtitulo}
             </div>
           )}
+        </div>
+
+        {/* Score gigante (centro do card creme) */}
+        <div
+          style={{
+            position: "absolute",
+            top: 920,
+            left: 0,
+            right: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <div
             style={{
               display: "flex",
               alignItems: "baseline",
-              gap: 16,
-              marginTop: 12,
+              gap: 18,
             }}
           >
             <span
               style={{
-                fontSize: 220,
+                display: "flex",
+                fontSize: 240,
                 fontWeight: 900,
                 color: ROSA_CHOQUE,
                 lineHeight: 1,
@@ -159,69 +137,57 @@ export async function GET(request: NextRequest) {
             >
               {score}
             </span>
-            <span style={{ fontSize: 80, color: `${PRETO_REVISTA}66` }}>
-              /{total}
+            <span
+              style={{
+                display: "flex",
+                fontSize: 80,
+                color: `${PRETO}55`,
+              }}
+            >
+              {`/${total}`}
             </span>
           </div>
           <div
             style={{
-              fontSize: 36,
+              display: "flex",
+              marginTop: 10,
+              fontSize: 32,
               color: LILAS,
               letterSpacing: 4,
-              fontWeight: 700,
+              fontWeight: 800,
               textTransform: "uppercase",
-              backgroundColor: `${AMARELO}55`,
-              padding: "8px 24px",
-              borderRadius: 999,
             }}
           >
-            {pct}% de acertos
+            {`${pct}% de acertos`}
           </div>
         </div>
 
-        {/* Manchete — primeira pessoa */}
+        {/* Manchete em primeira pessoa (parte de baixo do card creme) */}
         {manchete && (
           <div
             style={{
+              position: "absolute",
+              top: 1280,
+              left: 130,
+              right: 130,
               display: "flex",
-              backgroundColor: `${AMARELO}55`,
-              border: `4px solid ${AMARELO}`,
-              borderRadius: 24,
-              padding: "32px 40px",
-              fontSize: 36,
-              lineHeight: 1.35,
-              color: PRETO_REVISTA,
-              fontStyle: "italic",
+              justifyContent: "center",
             }}
           >
-            “{manchete}”
+            <div
+              style={{
+                display: "flex",
+                fontSize: 32,
+                color: PRETO,
+                fontStyle: "italic",
+                lineHeight: 1.35,
+                textAlign: "center",
+              }}
+            >
+              {`“${manchete}”`}
+            </div>
           </div>
         )}
-
-        {/* Footer */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            color: PRETO_REVISTA,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 32,
-              fontWeight: 700,
-              letterSpacing: 2,
-              color: ROSA_CHOQUE,
-            }}
-          >
-            quiz-ju.vercel.app
-          </div>
-          <div style={{ fontSize: 26, opacity: 0.7 }}>
-            24 . 04 . 2027 — Ilha do Retiro, Recife
-          </div>
-        </div>
       </div>
     ),
     {
