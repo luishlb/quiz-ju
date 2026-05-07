@@ -12,9 +12,10 @@
 
 export type QuestionId =
   | "q01" | "q02" | "q03" | "q04" | "q05"
-  | "q06" | "q07" | "q08" | "q09" | "q10" | "q11"
+  | "q07" | "q08" | "q09" | "q10" | "q11"
   | "q12" | "q13" | "q14" | "q15" | "q16" | "q17" | "q18"
   | "q19" | "q20" | "q21" | "q22"
+  | "q27" | "q28" | "q29" | "q30"
   | "q23" | "q24" | "q25" | "q26";
 
 type BaseQuestion = {
@@ -85,13 +86,8 @@ export const QUESTIONS: Question[] = [
 
   // ── Seção 2 — Coração
   {
-    id: "q06", section: 2, type: "short", scores: true,
-    prompt: "Quem foi o primeiro beijo da Ju?",
-    aliases: ["gustavo", "guga"],
-  },
-  {
     id: "q07", section: 2, type: "short", scores: true,
-    prompt: "E o primeiro namorado, quem foi?",
+    prompt: "Quem foi o primeiro namorado da Ju?",
     aliases: ["gustavo", "guga"],
   },
   {
@@ -157,9 +153,16 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
   {
-    id: "q16", section: 3, type: "short", scores: true,
+    id: "q16", section: 3, type: "multiple", scores: true,
     prompt: "Qual a maior mania/cacoete da Ju?",
-    keywords: ["controle", "mandar", "mandona", "ciumenta", "ciume", "ciúme"],
+    options: [
+      "Roer unha sem parar",
+      "Querer mandar em tudo",
+      "Falar muito alto",
+      "Mexer no cabelo o tempo todo",
+      "Estalar os dedos",
+    ],
+    correctIndex: 1,
   },
   {
     id: "q17", section: 3, type: "multiple", scores: true,
@@ -209,6 +212,42 @@ export const QUESTIONS: Question[] = [
       "De salto alto, no Alive",
     ],
     correctIndex: 0,
+  },
+  {
+    id: "q27", section: 4, type: "short", scores: true,
+    prompt: "Onde a Ju se acidentou tentando pegar um drone numa lancha e precisou ir pra UPA?",
+    aliases: [
+      "boipeba", "ilha de boipeba",
+      "morro de sao paulo", "morro de são paulo", "morro",
+      "boipeba morro", "boipeba/morro de são paulo",
+      "ilha de boipeba (morro de são paulo)",
+      "morro de sp", "morro são paulo",
+    ],
+  },
+  {
+    id: "q28", section: 4, type: "short", scores: true,
+    prompt: "Nessa mesma viagem, ela foi invadir a lua de mel de qual casal recém-casado?",
+    aliases: [
+      "diego e camila", "diego/camila", "camila e diego",
+      "diego camila", "diego, camila", "camila/diego",
+    ],
+  },
+  {
+    id: "q29", section: 4, type: "short", scores: true,
+    prompt: "Pra qual casal a Ju organizou junto com outros amigos um casamento surpresa?",
+    aliases: [
+      "luis e camila", "luís e camila", "luis/camila", "camila e luis",
+      "camila e luís", "luis camila", "luís camila", "camila/luis",
+    ],
+  },
+  {
+    id: "q30", section: 4, type: "short", scores: true,
+    prompt: "Em qual praia a Ju estava quando foi expulsa de uma ambulancha?",
+    aliases: [
+      "cotijuba", "praia de cotijuba", "ilha de cotijuba",
+      "cotijuba pa", "cotijuba pará", "cotijuba no pará",
+      "praia cotijuba", "cotijuba/pa",
+    ],
   },
 
   // ── Seção 5 — Revista (não pontuam)

@@ -173,10 +173,24 @@ MANIAS ENGRAÇADAS:
   ela manda no rolê, decide onde a galera vai.
 - Mandona, controladora, ciumenta de amigos (já é fato sabido q16).
 
-MICO LENDÁRIO (referência rara, só se fizer sentido):
-- Foi expulsa de uma "ambulancha" (lancha/ambulância no Pará) por brincar
-  dentro. Pode puxar quando rolar piada de Ju aprontando ou sendo
-  expulsa de algum lugar.
+HISTÓRIAS ESPECÍFICAS (são respostas de perguntas do próprio quiz —
+referencia com cuidado pra não dar spoiler de outra pergunta na manchete):
+- Acidente do drone em Boipeba / Morro de São Paulo: tentando pegar drone
+  numa lancha, foi pra UPA. Pode puxar em comentários de erro relacionados,
+  ou em manchete de quem ACERTOU essa pergunta.
+- "Invadiu" a lua de mel do Diego e Camila nessa viagem — junto com Luis
+  e Camila (todos foram convidados pelo casal, mas virou anedota do grupo
+  como se fosse cara-de-pau coletiva). PODE zoar como se fosse invasão,
+  mas sem dizer literalmente que ela foi sem ser chamada.
+- Organizou casamento surpresa do Luis e Camila com outros amigos. Demonstra
+  o lado "líder do grupo / orquestradora".
+- Foi expulsa de uma "ambulancha" (lancha-ambulância) em Cotijuba (Pará) por
+  brincar dentro. Anedota de Ju aprontando.
+
+REGRA IMPORTANTE: NÃO dê spoiler de uma resposta no texto pra alguém que
+acabou de errar a pergunta. Se a pessoa ERROU a pergunta da ambulancha
+(q30), não menciona Cotijuba na manchete dela — seria revelar o gabarito.
+Use essas histórias só pra QUEM ACERTOU ou pra QUEM gabaritou (já viu tudo).
 
 EXEMPLOS DE COMO USAR:
 - Comentário de erro pode terminar em "...teu cu" se a piada já tava ácida
