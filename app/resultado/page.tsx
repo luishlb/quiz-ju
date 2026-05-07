@@ -269,64 +269,52 @@ function ShareControls({
   nome: string;
 }) {
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [shareError, setShareError] = useState<string>("");
 
-  // Pré-carrega a imagem assim que a tela monta. Sem isso, o fetch dentro
-  // do click handler estoura o tempo do "user gesture" e o navigator.share
-  // do mobile silencia a chamada (era esse o bug do "fica gerando e nada").
+  // Pré-carrega a imagem em background — otimização. Se falhar, ok:
+  // o handleShare ainda baixa na hora do clique. NÃO trava o botão.
   useEffect(() => {
     let cancelled = false;
     fetch(ogUrl)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.blob();
-      })
+      .then((r) => (r.ok ? r.blob() : null))
       .then((b) => {
-        if (!cancelled) setImageBlob(b);
+        if (b && !cancelled) setImageBlob(b);
       })
-      .catch((e) => {
-        console.error("[share] prefetch falhou:", e);
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
   }, [ogUrl]);
 
-  const ready = imageBlob !== null;
-
   const handleShare = async () => {
+    if (busy) return;
+    setBusy(true);
     setShareError("");
-
-    // Se ainda não pré-carregou, baixa agora (mas ai pode estourar gesture)
-    let blob = imageBlob;
-    if (!blob) {
-      try {
+    try {
+      let blob = imageBlob;
+      if (!blob) {
         const res = await fetch(ogUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ao gerar imagem`);
         blob = await res.blob();
         setImageBlob(blob);
-      } catch (e) {
-        console.error("[share] fetch falhou:", e);
-        setShareError("não consegui carregar a imagem");
-        return;
       }
-    }
 
-    const file = new File([blob], `quiz-da-ju-${nome}.png`, {
-      type: "image/png",
-    });
+      const file = new File([blob], `quiz-da-ju-${nome}.png`, {
+        type: "image/png",
+      });
 
-    const nav = navigator as Navigator & {
-      canShare?: (data: ShareData) => boolean;
-    };
+      const nav = navigator as Navigator & {
+        canShare?: (data: ShareData) => boolean;
+      };
 
-    try {
       if (nav.canShare?.({ files: [file] })) {
         await nav.share({ files: [file], text: shareText });
       } else if (nav.share) {
         await nav.share({ text: shareText, url: window.location.origin });
       } else {
-        // Desktop / browser sem Web Share — força download
+        // Desktop sem Web Share — download direto
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -335,20 +323,30 @@ function ShareControls({
         URL.revokeObjectURL(url);
       }
     } catch (err) {
-      // Usuário cancelou a share sheet (esperado, não é erro)
       if (err instanceof Error && err.name === "AbortError") return;
-      console.error("[share] share falhou:", err);
-      setShareError(
+      console.error("[share] falhou:", err);
+      const msg =
         err instanceof Error
-          ? err.message
-          : "deu ruim ao abrir o compartilhar — tenta o download abaixo",
-      );
+          ? `${err.name}: ${err.message}`
+          : "deu ruim — usa o botão Baixar abaixo";
+      setShareError(msg);
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleDownload = () => {
-    if (!imageBlob) return;
-    const url = URL.createObjectURL(imageBlob);
+  const handleDownload = async () => {
+    let blob = imageBlob;
+    if (!blob) {
+      try {
+        const res = await fetch(ogUrl);
+        blob = await res.blob();
+      } catch {
+        setShareError("não consegui baixar");
+        return;
+      }
+    }
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `quiz-da-ju-${nome}.png`;
@@ -361,14 +359,14 @@ function ShareControls({
       <button
         type="button"
         onClick={handleShare}
-        disabled={!ready}
+        disabled={busy}
         className="bg-rosa-choque text-white font-bubble text-lg tracking-wide px-6 py-4 rounded-full shadow-[4px_4px_0_rgba(0,0,0,0.25)] hover:scale-[1.02] transition-transform text-center disabled:opacity-60 disabled:cursor-wait"
       >
-        {ready ? "📲 Compartilhar no Instagram/WhatsApp" : "🎀 gerando imagem..."}
+        {busy ? "🎀 gerando imagem..." : "📲 Compartilhar no Instagram/WhatsApp"}
       </button>
 
       {shareError && (
-        <p className="font-display text-[11px] text-rosa-choque text-center -mt-1">
+        <p className="font-display text-[11px] text-rosa-choque text-center -mt-1 px-2">
           ⚠️ {shareError}
         </p>
       )}
@@ -384,8 +382,7 @@ function ShareControls({
         <button
           type="button"
           onClick={handleDownload}
-          disabled={!ready}
-          className="flex-1 min-w-[100px] font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white disabled:opacity-50"
+          className="flex-1 min-w-[100px] font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white"
         >
           📥 baixar
         </button>
