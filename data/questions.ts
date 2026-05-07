@@ -83,10 +83,11 @@ export const QUESTIONS: Question[] = [
     options: [
       "Praça da Juventude (Robert Kennedy)",
       "Praça da Sudene",
+      "Praça dos Brotos",
       "Praça Marechal Soares D'Andréa",
       "Praça Marcelo Pinheiro Filho",
     ],
-    correctIndex: 0,
+    correctIndex: 2,
   },
   {
     id: "q08", section: 1, type: "multiple", scores: true,
