@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Countdown } from "@/components/ui/Countdown";
+import { JuMascot } from "@/components/ui/JuMascot";
 import { NameForm } from "@/components/ui/NameForm";
 
 export default function Landing() {
@@ -55,6 +56,9 @@ export default function Landing() {
             ✨ Teste oficial Capricho ✨
           </p>
         </div>
+
+        {/* Bonequinho saltitante da Ju */}
+        <JuMascot mood="feliz" size="md" className="-mb-2" />
 
         {/* Form do nome */}
         <NameForm />

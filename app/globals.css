@@ -84,3 +84,113 @@ body {
     /* peso geral da revista na superfície */
     14px 18px 32px rgba(0, 0, 0, 0.28);
 }
+
+/* ===== JuMascot ===== */
+/* Bonequinho com cabeça-foto + corpo SVG.
+ * Cabeça em cima, corpo em baixo, sparkles flutuando ao redor.
+ * 2 frames trocando dão a sensação de GIF. */
+
+.ju-mascot {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.ju-mascot[data-mood="feliz"] {
+  animation: ju-bounce 0.7s steps(2, end) infinite;
+}
+
+.ju-mascot[data-mood="triste"] {
+  animation: ju-sob 1.6s ease-in-out infinite;
+}
+
+@keyframes ju-bounce {
+  0%   { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes ju-sob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50%      { transform: translateY(-3px) rotate(1deg); }
+}
+
+.ju-head {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #1A1A1A;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
+  background: #fff;
+  z-index: 2;
+}
+
+.ju-head img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ju-mascot[data-mood="triste"] .ju-head img {
+  filter: saturate(0.7) brightness(0.95);
+}
+
+.ju-tear {
+  position: absolute;
+  bottom: -6px;
+  right: 18%;
+  font-size: 18px;
+  animation: ju-tear-fall 1.4s ease-in infinite;
+  filter: drop-shadow(0 1px 2px rgba(0, 122, 255, 0.5));
+}
+
+@keyframes ju-tear-fall {
+  0%   { transform: translateY(-6px); opacity: 0; }
+  20%  { opacity: 1; }
+  90%  { transform: translateY(20px); opacity: 1; }
+  100% { transform: translateY(28px); opacity: 0; }
+}
+
+.ju-body {
+  margin-top: -6px; /* cola no pescoço */
+  z-index: 1;
+}
+
+/* Trocador de frames de braços — alterna A/B via steps */
+.ju-frame-b { display: none; }
+.ju-mascot .ju-body { animation: ju-frames 0.6s steps(2, jump-none) infinite; }
+
+@keyframes ju-frames {
+  0%, 49%   { /* mostra A */ }
+  50%, 100% { /* mostra B */ }
+}
+/* Como steps(2) só serve pra discretizar a animação geral, o swap real
+ * fazemos via animation no SVG inteiro alternando opacity dos grupos.
+ * Solução robusta: usar animação separada que toggles display dos grupos. */
+
+@keyframes ju-toggle-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ju-toggle-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
+
+.ju-body .ju-frame-a { animation: ju-toggle-a 0.55s steps(1) infinite; }
+.ju-body .ju-frame-b { animation: ju-toggle-b 0.55s steps(1) infinite; display: inline; }
+
+/* Sparkles em volta (só mood feliz) */
+.ju-sparkle {
+  position: absolute;
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 3;
+  animation: ju-float 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(255, 105, 180, 0.5));
+}
+
+.ju-sparkle-1 { top: 4%;  left: -6%;  animation-delay: 0s; }
+.ju-sparkle-2 { top: 18%; right: -4%; animation-delay: 0.4s; font-size: 22px; }
+.ju-sparkle-3 { top: 0;   right: 22%; animation-delay: 0.8s; font-size: 16px; }
+
+@keyframes ju-float {
+  0%, 100% { transform: translateY(0) scale(0.9); opacity: 0.7; }
+  50%      { transform: translateY(-8px) scale(1.15); opacity: 1; }
+}
