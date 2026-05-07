@@ -153,28 +153,29 @@ body {
   50%      { transform: translateY(-4px) scale(1.15) rotate(6deg); opacity: 1; }
 }
 
-/* Dedo do meio — emoji absoluto na ponta do braço direito do corpo SVG.
- * Posicionado relativo ao ju-mascot (que é o container com position:relative
- * implícito via inline-flex). Tamanho proporcional ao mascote inteiro. */
+/* Dedo do meio — emoji absoluto na ponta exata do braço direito do BodySad.
+ *
+ * O braço SVG vai de viewBox (70,18) até (84,-2). Convertendo pra coords
+ * do container (com margens iguais entre body e mascote-box), a ponta
+ * cai sempre em ~70% left e ~37% top, independente do tamanho.
+ * O emoji é centrado nesse ponto com translate(-50%,-50%).
+ * Tamanho proporcional ao corpo: ~45% — mais ou menos uma "mão" cartoon. */
 .ju-finger {
   position: absolute;
-  /* o braço da BodySad termina aproximadamente na parte superior-direita
-   * do corpo. Em coords do mascote (height ~ 1.5x box), o ombro fica em
-   * ~52% da altura, e o emoji vai um pouco acima e à direita */
-  top: 42%;
-  right: -8%;
-  font-size: calc(var(--head-size) * 0.85);
+  top: 37%;
+  left: 70%;
+  font-size: calc(var(--body-size) * 0.45);
   line-height: 1;
   pointer-events: none;
   z-index: 4;
-  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.35));
-  animation: ju-finger-shake 0.18s steps(2) infinite;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.35));
   transform-origin: 50% 90%;
+  animation: ju-finger-shake 0.18s steps(2) infinite;
 }
 
 @keyframes ju-finger-shake {
-  0%   { transform: rotate(-6deg); }
-  100% { transform: rotate(6deg); }
+  0%   { transform: translate(-50%, -50%) rotate(-8deg); }
+  100% { transform: translate(-50%, -50%) rotate(8deg); }
 }
 
 .ju-body {
