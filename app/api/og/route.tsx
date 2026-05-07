@@ -84,30 +84,33 @@ export async function GET(request: NextRequest) {
           }}
         />
 
-        {/* Bloco título + subtítulo (parte de cima do card creme) */}
+        {/* Bloco título + subtítulo (parte de cima do card creme).
+            Margens laterais GRANDES pra forçar quebra natural do título
+            quando for longo. Sem display:flex no texto pra deixar o
+            algoritmo de wrap do Satori operar. */}
         <div
           style={{
             position: "absolute",
-            top: 620,
-            left: 60,
-            right: 60,
+            top: 580,
+            left: 150,
+            right: 150,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 24,
+            gap: 20,
           }}
         >
           <div
             style={{
-              display: "flex",
               fontFamily: FAMILY_BUNGEE,
-              fontSize: 62,
+              fontSize: 70,
               color: ROSA_CHOQUE,
               textAlign: "center",
-              lineHeight: 1,
+              lineHeight: 0.95,
               letterSpacing: 0,
               textTransform: "uppercase",
               textShadow: `4px 4px 0 #fff`,
+              wordBreak: "break-word",
             }}
           >
             {titulo}
@@ -115,9 +118,8 @@ export async function GET(request: NextRequest) {
           {subtitulo && (
             <div
               style={{
-                display: "flex",
                 fontFamily: FAMILY_LILITA,
-                fontSize: 34,
+                fontSize: 32,
                 color: LILAS,
                 fontStyle: "italic",
                 textAlign: "center",
@@ -191,22 +193,22 @@ export async function GET(request: NextRequest) {
           <div
             style={{
               position: "absolute",
-              top: 1280,
-              left: 110,
-              right: 110,
+              top: 1260,
+              left: 160,
+              right: 160,
               display: "flex",
               justifyContent: "center",
             }}
           >
             <div
               style={{
-                display: "flex",
                 fontFamily: FAMILY_LILITA,
-                fontSize: 36,
+                fontSize: 32,
                 color: PRETO,
                 fontStyle: "italic",
                 lineHeight: 1.3,
                 textAlign: "center",
+                wordBreak: "break-word",
               }}
             >
               {`“${manchete}”`}

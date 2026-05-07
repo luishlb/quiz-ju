@@ -67,6 +67,14 @@ export function JuMascot({
         )}
       </div>
 
+      {/* Dedo do meio — emoji bem grande, acima do braço direito do corpo.
+          Universal, sem ambiguidade visual. Anima balançando. */}
+      {mood === "triste" && (
+        <span className="ju-finger" aria-hidden>
+          🖕
+        </span>
+      )}
+
       {/* CORPO SVG (chibi) */}
       <svg
         className="ju-body"
@@ -123,18 +131,15 @@ function BodyHappy() {
 }
 
 /**
- * Corpo "puta a vida" — vestido lilás, mão direita levantada com dedo do meio
- * em pé, mão esquerda na cintura (atitude). Frame A/B: dedo balançando levemente
- * (efeito "tô descontente, sim").
- *
- * SVG: o dedo do meio é desenhado como um retângulo arredondado vertical na
- * mão direita, com os outros dedos representados como pequenos retângulos
- * dobrados embaixo. Estética cartoon, sem nada explícito.
+ * Corpo "puta a vida" — vestido lilás roxo, mão esquerda na cintura,
+ * braço direito esticado pra cima. O dedo do meio em si é renderizado
+ * como emoji 🖕 sobreposto via HTML (ver JuMascot), pra ficar inequívoco
+ * no formato meme. SVG cuida só do corpo + braço.
  */
 function BodySad() {
   return (
     <g>
-      {/* vestido lilás (dedo médio merece roxo de raiva) */}
+      {/* vestido lilás (atitude) */}
       <path
         d="M 30 10 L 70 10 L 78 70 L 50 75 L 22 70 Z"
         fill="#9D4EDD"
@@ -145,55 +150,20 @@ function BodySad() {
       <line x1="40" y1="75" x2="38" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
       <line x1="60" y1="75" x2="62" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
 
-      {/* mão esquerda fixa na cintura (não anima) */}
+      {/* mão esquerda na cintura (estática) */}
       <path d="M 30 18 Q 18 28 22 45 L 32 42" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
       <circle cx="32" cy="42" r="4" fill="#9D4EDD" stroke="#1A1A1A" strokeWidth="1.5" />
 
-      {/* === BRAÇO DIREITO COM DEDO DO MEIO === */}
+      {/* === BRAÇO DIREITO levantado (o punho conecta com o emoji 🖕) === */}
 
-      {/* Frame A — dedo levemente inclinado pra esquerda */}
+      {/* Frame A — braço inclinado pra esquerda */}
       <g className="ju-frame-a">
-        {/* braço */}
-        <path d="M 70 18 Q 82 8 84 -8" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        {/* punho */}
-        <circle cx="84" cy="-8" r="5.5" fill="#FFD9C9" stroke="#1A1A1A" strokeWidth="1.5" />
-        {/* dedo do meio levantado (retângulo vertical arredondado) */}
-        <rect
-          x="81.5"
-          y="-22"
-          width="5"
-          height="13"
-          rx="2.5"
-          fill="#FFD9C9"
-          stroke="#1A1A1A"
-          strokeWidth="1.5"
-          transform="rotate(-4 84 -15)"
-        />
-        {/* unha (detalhe) */}
-        <line x1="82" y1="-21" x2="86" y2="-21" stroke="#1A1A1A" strokeWidth="0.8" strokeLinecap="round" />
-        {/* dedinhos dobrados (laterais do punho) */}
-        <line x1="79.5" y1="-7" x2="78" y2="-3" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="88.5" y1="-7" x2="90" y2="-3" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M 70 18 Q 82 8 84 -2" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
       </g>
 
-      {/* Frame B — dedo levemente inclinado pra direita (balança) */}
+      {/* Frame B — braço inclinado pra direita */}
       <g className="ju-frame-b">
-        <path d="M 70 18 Q 84 8 86 -6" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <circle cx="86" cy="-6" r="5.5" fill="#FFD9C9" stroke="#1A1A1A" strokeWidth="1.5" />
-        <rect
-          x="83.5"
-          y="-20"
-          width="5"
-          height="13"
-          rx="2.5"
-          fill="#FFD9C9"
-          stroke="#1A1A1A"
-          strokeWidth="1.5"
-          transform="rotate(4 86 -13)"
-        />
-        <line x1="84" y1="-19" x2="88" y2="-19" stroke="#1A1A1A" strokeWidth="0.8" strokeLinecap="round" />
-        <line x1="81.5" y1="-5" x2="80" y2="-1" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="90.5" y1="-5" x2="92" y2="-1" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M 70 18 Q 84 8 86 0" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
       </g>
     </g>
   );
