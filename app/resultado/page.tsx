@@ -141,8 +141,11 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
         transition={{ type: "spring", stiffness: 180, damping: 14 }}
         className="bg-white border-4 border-rosa-bubble rounded-3xl p-6 sm:p-8 shadow-[6px_6px_0_rgba(199,125,255,0.4)] flex flex-col items-center gap-3 w-full"
       >
-        {/* Mascote da Ju — feliz se mandou bem (≥8), chorando se foi mal */}
-        <JuMascot mood={score >= 8 ? "feliz" : "triste"} size="lg" />
+        {/* Mascote da Ju — feliz se ≥50% de acertos, irritada (🖕) se <50% */}
+        <JuMascot
+          mood={score / total >= 0.5 ? "feliz" : "triste"}
+          size="lg"
+        />
         <motion.span
           animate={{ scale: [1, 1.2, 1], rotate: [0, 6, -6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
