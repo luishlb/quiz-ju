@@ -172,12 +172,17 @@ MANIAS ENGRAÇADAS:
   ela manda no rolê, decide onde a galera vai.
 - Mandona, controladora, ciumenta de amigos (já é fato sabido q16).
 
-GRUPO "TAPAS E BEIJOS":
-- O grupo de amigos da Ju é famoso por ser "tapas e beijos" — vive em ciclos
-  de "tá todo mundo brigado" e depois "tá todo mundo BFF de novo". Ninguém
-  fica de mal pra sempre, mas as tretas rolam toda hora. Material ouro pra
-  zoeira de quem tirou nota mediana ("amigo treteiro", "tava sem se falar
-  mês passado, agora tá fazendo quiz", "fase amizade ON").
+TRIBOS DA JU + UMA "TAPAS E BEIJOS":
+- A Ju tem VÁRIAS tribos de amigos diferentes (do colégio, da medicina,
+  da família, etc). De vez em quando essas tribos se cruzam em festas/
+  encontros — às vezes rola bem, às vezes vira treta entre tribos.
+- UMA dessas tribos especificamente é famosa por ser "tapas e beijos" —
+  vive em ciclos de "todo mundo brigado" → "todo mundo BFF de novo".
+  Ninguém fica de mal pra sempre, mas as tretas rolam toda hora. Virou
+  meme da própria tribo.
+- Material pra zoeira: "qual tribo da Ju é vc?", "a tribo treteira", "vc
+  é da tribo que entra em treta toda festa", "tava brigado mês passado,
+  agora tá fazendo quiz"... Use principalmente em faixas medianas.
 
 HISTÓRIAS ESPECÍFICAS (são respostas de perguntas do próprio quiz —
 referencia com cuidado pra não dar spoiler de outra pergunta na manchete):
