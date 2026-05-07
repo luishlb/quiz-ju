@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { JuMascot } from "@/components/ui/JuMascot";
 import type { TitleTier } from "@/lib/titles";
-import { getAnswers, getNome } from "@/lib/storage";
+import { clearAll, getAnswers, getNome, getTempoFinal } from "@/lib/storage";
 
 type WrongItem = {
   id: string;
@@ -48,10 +48,12 @@ export default function ResultadoPage() {
       return;
     }
 
+    const tempoSegundos = getTempoFinal();
+
     fetch("/api/avaliar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, respostas }),
+      body: JSON.stringify({ nome, respostas, tempoSegundos }),
     })
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -233,12 +235,11 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
         wppHref={wppHref}
         nome={nome}
       />
-      <a
-        href="/"
-        className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white text-center w-full"
-      >
-        🏠 voltar pro início
-      </a>
+      <RefazerButton />
+
+      <p className="text-center text-[11px] text-preto-revista/50 font-display tracking-wide -mt-1">
+        seu resultado já foi registrado pra Ju conferir 💌
+      </p>
 
       <p className="text-center mt-2 text-[11px] text-preto-revista/50 font-display tracking-wide">
         feito com 💖 pra Ju, edição limitada de 40 anos · {nome}
@@ -348,5 +349,32 @@ function ShareControls({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Botão "Refazer teste" — limpa todo o localStorage do quiz e volta pra landing.
+ * Confirm dialog evita clique acidental. Resultado JÁ FOI persistido no DB
+ * antes — então mesmo que o usuário refaça, o anterior ficou registrado
+ * (ninguém consegue esconder score ruim).
+ */
+function RefazerButton() {
+  const router = useRouter();
+  const handleClick = () => {
+    const ok = window.confirm(
+      "Tem certeza? Vai apagar todas as suas respostas e começar de novo.",
+    );
+    if (!ok) return;
+    clearAll();
+    router.push("/");
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="font-display text-sm uppercase tracking-wider px-5 py-3 rounded-full border-2 border-rosa-bubble text-rosa-choque bg-white/70 hover:bg-white text-center w-full"
+    >
+      🔄 Refazer teste
+    </button>
   );
 }

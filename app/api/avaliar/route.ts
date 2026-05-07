@@ -18,6 +18,7 @@ import {
 } from "@/lib/gemini";
 import { matchesAny, matchesKeyword } from "@/lib/normalize";
 import type { AnswersMap } from "@/lib/scoring";
+import { registrarResultado } from "@/lib/supabase";
 import { tierForScore } from "@/lib/titles";
 
 export const runtime = "nodejs";
@@ -25,6 +26,7 @@ export const runtime = "nodejs";
 type AvaliarRequest = {
   nome: string;
   respostas: AnswersMap;
+  tempoSegundos?: number;
 };
 
 type WrongItem = {
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const { nome, respostas } = body;
+  const { nome, respostas, tempoSegundos } = body;
   if (!nome || typeof respostas !== "object") {
     return NextResponse.json({ error: "Payload incompleto" }, { status: 400 });
   }
@@ -178,6 +180,22 @@ export async function POST(request: NextRequest) {
     manchete = `${nome}, ${tier.title}! ${tier.subtitle}.`;
     manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${tier.title}!`;
   }
+
+  // 4. Persiste tudo no Supabase (silencioso — falha de DB não quebra a resposta).
+  // Cada chamada do /resultado vira UMA linha — refazer = nova entrada com timestamp.
+  const userAgent = request.headers.get("user-agent");
+  await registrarResultado({
+    nome,
+    pontuacao: score,
+    total,
+    titulo,
+    subtitulo,
+    manchete,
+    manchete_post: manchetePost,
+    respostas: respostas as Record<string, string>,
+    tempo_segundos: typeof tempoSegundos === "number" ? tempoSegundos : null,
+    user_agent: userAgent,
+  });
 
   return NextResponse.json({
     score,

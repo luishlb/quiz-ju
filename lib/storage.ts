@@ -65,3 +65,16 @@ export function ensureStart(): void {
 export function setTempoFinal(seconds: number): void {
   localStorage.setItem(STORAGE_KEYS.tempo, String(seconds));
 }
+export function getTempoFinal(): number | null {
+  const raw = localStorage.getItem(STORAGE_KEYS.tempo);
+  if (!raw) return null;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Apaga TODOS os dados do quiz (botão "Refazer teste") */
+export function clearAll(): void {
+  for (const key of Object.values(STORAGE_KEYS)) {
+    localStorage.removeItem(key);
+  }
+}

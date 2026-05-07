@@ -15,6 +15,7 @@ import {
   setIndex as saveIndex,
   setTempoFinal,
 } from "@/lib/storage";
+import { JuMascot } from "@/components/ui/JuMascot";
 import { ConfettiBurst } from "./ConfettiBurst";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionCard } from "./QuestionCard";
@@ -212,12 +213,17 @@ export function QuizFlow() {
           </motion.button>
         </div>
 
-        {/* Pular: discreto, abaixo dos botões principais */}
-        <div className="text-center mt-3">
+        {/* Mascote saltitante centralizado acima do pular */}
+        <div className="flex justify-center mt-4">
+          <JuMascot mood="feliz" size="sm" />
+        </div>
+
+        {/* Pular: discreto, abaixo do mascote */}
+        <div className="text-center mt-2">
           <button
             type="button"
             onClick={goSkip}
-            className="font-display text-xs uppercase tracking-wider text-preto-revista/50 hover:text-rosa-choque underline underline-offset-4 decoration-dotted transition-colors"
+            className="font-display text-sm uppercase tracking-wider text-rosa-choque/80 hover:text-rosa-choque underline underline-offset-4 decoration-dotted transition-colors"
           >
             não sei essa, pular ↷
           </button>
