@@ -268,29 +268,65 @@ function ShareControls({
   wppHref: string;
   nome: string;
 }) {
-  const [busy, setBusy] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
+  const [shareError, setShareError] = useState<string>("");
+
+  // Pré-carrega a imagem assim que a tela monta. Sem isso, o fetch dentro
+  // do click handler estoura o tempo do "user gesture" e o navigator.share
+  // do mobile silencia a chamada (era esse o bug do "fica gerando e nada").
+  useEffect(() => {
+    let cancelled = false;
+    fetch(ogUrl)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.blob();
+      })
+      .then((b) => {
+        if (!cancelled) setImageBlob(b);
+      })
+      .catch((e) => {
+        console.error("[share] prefetch falhou:", e);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ogUrl]);
+
+  const ready = imageBlob !== null;
 
   const handleShare = async () => {
-    if (busy) return;
-    setBusy(true);
+    setShareError("");
+
+    // Se ainda não pré-carregou, baixa agora (mas ai pode estourar gesture)
+    let blob = imageBlob;
+    if (!blob) {
+      try {
+        const res = await fetch(ogUrl);
+        blob = await res.blob();
+        setImageBlob(blob);
+      } catch (e) {
+        console.error("[share] fetch falhou:", e);
+        setShareError("não consegui carregar a imagem");
+        return;
+      }
+    }
+
+    const file = new File([blob], `quiz-da-ju-${nome}.png`, {
+      type: "image/png",
+    });
+
+    const nav = navigator as Navigator & {
+      canShare?: (data: ShareData) => boolean;
+    };
+
     try {
-      const res = await fetch(ogUrl);
-      const blob = await res.blob();
-      const file = new File([blob], `quiz-da-ju-${nome}.png`, {
-        type: "image/png",
-      });
-
-      const nav = navigator as Navigator & {
-        canShare?: (data: ShareData) => boolean;
-      };
-
       if (nav.canShare?.({ files: [file] })) {
         await nav.share({ files: [file], text: shareText });
       } else if (nav.share) {
         await nav.share({ text: shareText, url: window.location.origin });
       } else {
-        // Desktop sem Web Share — força download
+        // Desktop / browser sem Web Share — força download
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -299,10 +335,25 @@ function ShareControls({
         URL.revokeObjectURL(url);
       }
     } catch (err) {
-      console.error("share falhou:", err);
-    } finally {
-      setBusy(false);
+      // Usuário cancelou a share sheet (esperado, não é erro)
+      if (err instanceof Error && err.name === "AbortError") return;
+      console.error("[share] share falhou:", err);
+      setShareError(
+        err instanceof Error
+          ? err.message
+          : "deu ruim ao abrir o compartilhar — tenta o download abaixo",
+      );
     }
+  };
+
+  const handleDownload = () => {
+    if (!imageBlob) return;
+    const url = URL.createObjectURL(imageBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `quiz-da-ju-${nome}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -310,27 +361,41 @@ function ShareControls({
       <button
         type="button"
         onClick={handleShare}
-        disabled={busy}
+        disabled={!ready}
         className="bg-rosa-choque text-white font-bubble text-lg tracking-wide px-6 py-4 rounded-full shadow-[4px_4px_0_rgba(0,0,0,0.25)] hover:scale-[1.02] transition-transform text-center disabled:opacity-60 disabled:cursor-wait"
       >
-        {busy ? "🎀 gerando imagem..." : "📲 Compartilhar no Instagram/WhatsApp"}
+        {ready ? "📲 Compartilhar no Instagram/WhatsApp" : "🎀 gerando imagem..."}
       </button>
 
-      <div className="flex gap-2">
+      {shareError && (
+        <p className="font-display text-[11px] text-rosa-choque text-center -mt-1">
+          ⚠️ {shareError}
+        </p>
+      )}
+
+      <div className="flex gap-2 flex-wrap">
         <button
           type="button"
           onClick={() => setPreviewOpen((s) => !s)}
-          className="flex-1 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white"
+          className="flex-1 min-w-[100px] font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white"
         >
           {previewOpen ? "🙈 esconder" : "👀 ver prévia"}
+        </button>
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={!ready}
+          className="flex-1 min-w-[100px] font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white disabled:opacity-50"
+        >
+          📥 baixar
         </button>
         <a
           href={wppHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white text-center"
+          className="flex-1 min-w-[100px] font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full border-2 border-rosa-pastel text-rosa-choque bg-white/70 hover:bg-white text-center"
         >
-          💬 só texto WhatsApp
+          💬 só texto
         </a>
       </div>
 
