@@ -91,10 +91,13 @@ export type MancheteInput = {
   nome: string;
   score: number;
   total: number;
-  tier: string;
+  /** Título já escolhido do pool fixo (em lib/titulos.ts) — passamos pro
+   *  modelo apenas como contexto pra ele manter coerência na manchete. */
+  titulo: string;
+  /** Subtítulo já escolhido do pool — mesmo motivo. */
+  subtitulo: string;
   palavraUnica?: string;
   fraseCompletar?: string;
-  musicaJu?: string;
   recado?: string;
 };
 
@@ -106,10 +109,6 @@ export type ErroParaComentar = {
 };
 
 export type AvaliacaoIA = {
-  /** Rótulo curto MAIÚSCULO (2-4 palavras) gerado especificamente pra essa pessoa */
-  titulo: string;
-  /** Subtítulo de uma linha em lowercase, italic-feel, debochado */
-  subtitulo: string;
   /** Manchete em SEGUNDA pessoa, dirigida à pessoa que tá lendo (tela /resultado) */
   manchete: string;
   /** Manchete reescrita em PRIMEIRA pessoa, pra ela postar como se estivesse falando do próprio resultado (image share) */
@@ -211,58 +210,40 @@ Olhe pro NOME e infira o gênero gramatical pra usar pronomes/adjetivos certos:
 NUNCA chame um homem de "amiga" ou uma mulher de "amigo". É falha grave.
 
 ==== ESTRUTURA DA RESPOSTA (JSON) ====
-Você DEVE produzir 4 campos:
+Você DEVE produzir 3 campos:
 
-1) "titulo": rótulo MAIÚSCULO de 2 a 4 palavras, ÚNICO pra essa pessoa.
-   NÃO usar "AMIGA/AMIGO DE VERDADE", "BFF NOTA 10" ou outros clichês.
-   Tem que ser específico, debochado, condizente com a FAIXA PERCENTUAL
-   de acertos (você recebe % e total no input). Use a tabela abaixo como
-   guia — siga o tom da faixa, NÃO repita os exemplos literalmente:
+★ ATENÇÃO: titulo e subtitulo já vêm prontos no input (vêm de um pool
+fixo curado). Você NÃO precisa gerá-los, só USÁ-LOS como CONTEXTO pra
+manter coerência com o resto que você escreve. Use o tom do título e
+subtítulo pra dar a manchete na mesma vibe.
 
-   ★ FAIXAS DE DESEMPENHO (em PERCENTUAL — sempre calibre por aqui) ★
+★ FAIXAS DE DESEMPENHO (em PERCENTUAL — sempre calibre tom por aqui) ★
 
    - 0% a 20%   → RIDICULAMENTE RUIM. Escárnio sem dó. Não conhece nada.
-                  Tom: "intruso", "tem certeza que é amigo dela mesmo?"
-                  Ex: "ZERO BALA" / "QUEM CONVIDOU?" / "INTRUSO NA FESTA"
-
    - 21% a 50%  → RUIM. Provocação direta. Conhece de longe.
-                  Tom: "amigo de aniversário só", "sumiu há anos"
-                  Ex: "PARÇA DE LISTA" / "SUMIDO DESDE 2015" / "MEIA AMIZADE"
-
-   - 51% a 70%  → MAIS OU MENOS. Deboche amigável, mediano.
-                  Tom: "razoável", "tem o básico mas falha no detalhe"
-                  Ex: "QUASE LÁ" / "AMIZADE DE BAIRRO" / "INTIMIDADE PARCIAL"
-
+   - 51% a 70%  → MAIS OU MENOS. Deboche amigável, mediano. Não infla elogio.
    - 71% a 90%  → BOM. Elogio com leve pegadinha.
-                  Tom: "vai bem, é amigo de fato"
-                  Ex: "GUARDA-COSTAS DA JU" / "CÚMPLICE DE FOFOCA" / "QUASE BFF"
-
    - 91% a 100% → ALMA GÊMEA. Elogio com hipérbole / suspeita.
-                  Tom: "assustador de tanto que sabe", "stalker amigável"
-                  Ex: "STALKER OFICIAL" / "ARQUIVO VIVO DA JU" / "ALMA GÊMEA"
 
-   IMPORTANTE: cria um título NOVO. Não use os exemplos acima literalmente.
-   E SIGA A FAIXA — 64% é "MAIS OU MENOS", NÃO É BOM. Não infle elogio.
+   SIGA A FAIXA do input. 64% é "MAIS OU MENOS", NÃO É BOM. Não exagera.
 
-2) "subtitulo": uma frase em LOWERCASE, italic-feel, debochada,
-   máximo 8 palavras. Ex: "vc decora o cardápio dela há 20 anos",
-   "presença em festa, ausência no detalhe", "quase quase, quem sabe em 2030".
-
-3) "manchete": parágrafo único de 3 a 5 frases (50 a 90 palavras), começando
+1) "manchete": parágrafo único de 3 a 5 frases (50 a 90 palavras), começando
    com o nome da pessoa. Em SEGUNDA pessoa — você está falando COM a pessoa
    ("Luis, você foi praticamente..."). Esse texto aparece na tela de resultado
-   pra própria pessoa ler. Comente o desempenho geral, incorpore as respostas
-   abertas quando der pra fazer piada. Sem aspas, sem markdown, 1-2 emojis no
-   total. NÃO insinue romance com a Ju — ela é casada (ver regra acima).
+   pra própria pessoa ler. DEVE estar em coerência com o título e subtítulo
+   recebidos no input — mesmo tom, mesmo nível de deboche/elogio. Comente
+   o desempenho geral, incorpore as respostas abertas quando der pra fazer
+   piada. Sem aspas, sem markdown, 1-2 emojis no total. NÃO insinue romance
+   com a Ju — ela é casada (ver regra acima).
 
-4) "manchetePost": MESMO conteúdo da manchete, mas reescrita em PRIMEIRA pessoa
+2) "manchetePost": MESMO conteúdo da manchete, mas reescrita em PRIMEIRA pessoa
    como se a pessoa estivesse postando o próprio resultado pros seguidores
    ("Eu fui praticamente a outra metade...", "Tirei X de Y e..."). Esse texto
    vai pra dentro de uma imagem de compartilhamento (Story IG/WhatsApp).
    Mais curto: 2-3 frases (30-50 palavras). Não comece com o nome (a pessoa
    não vai dizer o próprio nome no post dela). Sem aspas, sem markdown.
 
-5) "comentarios": array de {id, comentario} — UM comentário pra CADA pergunta
+3) "comentarios": array de {id, comentario} — UM comentário pra CADA pergunta
    errada listada no input. Cada comentário tem 1-2 frases curtas (até 25
    palavras), revelando a resposta correta de um jeito ENGRAÇADO. Pode falar
    direto com a pessoa ("achou que era...?", "sério mesmo??"). Sem aspas.
@@ -329,10 +310,10 @@ DADOS DESSA PESSOA:
 - Nome: ${input.nome}
 - Pontuação: ${input.score} de ${input.total} (${pct}%)
 - FAIXA DE DESEMPENHO: ${faixa}  ← calibrar tom EXATAMENTE por essa faixa
-- Tier interno: "${input.tier}"
+- TÍTULO já escolhido (use como contexto, não regere): "${input.titulo}"
+- SUBTÍTULO já escolhido (idem): "${input.subtitulo}"
 - Palavra que define a Ju: ${input.palavraUnica ?? "(não respondeu)"}
 - "A Ju pra mim é...": ${input.fraseCompletar ?? "(não respondeu)"}
-- Música que define a Ju: ${input.musicaJu ?? "(não respondeu)"}
 - Recado pra Ju nos 40 anos: ${input.recado ?? "(não respondeu)"}
 
 PERGUNTAS QUE ESSA PESSOA ERROU (gerar 1 comentário pra cada, com o "id" exato):
@@ -353,8 +334,6 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          titulo: { type: Type.STRING },
-          subtitulo: { type: Type.STRING },
           manchete: { type: Type.STRING },
           manchetePost: { type: Type.STRING },
           comentarios: {
@@ -369,7 +348,7 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
             },
           },
         },
-        required: ["titulo", "subtitulo", "manchete", "manchetePost", "comentarios"],
+        required: ["manchete", "manchetePost", "comentarios"],
       },
     },
   });
@@ -378,13 +357,11 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
   try {
     const parsed = JSON.parse(txt) as AvaliacaoIA;
     return {
-      titulo: parsed.titulo?.trim() ?? "",
-      subtitulo: parsed.subtitulo?.trim() ?? "",
       manchete: parsed.manchete?.trim() ?? "",
       manchetePost: parsed.manchetePost?.trim() ?? "",
       comentarios: Array.isArray(parsed.comentarios) ? parsed.comentarios : [],
     };
   } catch {
-    return { titulo: "", subtitulo: "", manchete: "", manchetePost: "", comentarios: [] };
+    return { manchete: "", manchetePost: "", comentarios: [] };
   }
 }

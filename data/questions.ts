@@ -17,7 +17,7 @@ export type QuestionId =
   | "q12" | "q13" | "q14" | "q15" | "q16" | "q17" | "q18"
   | "q19" | "q20" | "q21" | "q22"
   | "q27" | "q28" | "q29" | "q30"
-  | "q23" | "q24" | "q25" | "q26";
+  | "q23" | "q24" | "q26";
 
 type BaseQuestion = {
   id: QuestionId;
@@ -285,10 +285,6 @@ export const QUESTIONS: Question[] = [
   {
     id: "q24", section: 3, type: "open-long", scores: false,
     prompt: "Complete a frase: \"A Ju pra mim é...\"",
-  },
-  {
-    id: "q25", section: 3, type: "open-short", scores: false,
-    prompt: "Se a Ju fosse uma música, qual seria?",
   },
   {
     id: "q26", section: 3, type: "open-long", scores: false,

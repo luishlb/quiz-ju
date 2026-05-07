@@ -20,6 +20,7 @@ import { matchesAny, matchesKeyword } from "@/lib/normalize";
 import type { AnswersMap } from "@/lib/scoring";
 import { registrarResultado } from "@/lib/supabase";
 import { tierForScore } from "@/lib/titles";
+import { pickTituloSubtitulo } from "@/lib/titulos";
 
 export const runtime = "nodejs";
 
@@ -133,10 +134,13 @@ export async function POST(request: NextRequest) {
   const total = QUESTIONS.filter((q) => q.scores).length;
   const tier = tierForScore(score);
 
-  // 3. Pega respostas abertas pra alimentar a manchete
+  // 3. Sorteia título + subtítulo do POOL FIXO baseado na faixa percentual
+  // (mais consistente que pedir pra IA gerar — antes saía meio aleatório).
+  const { titulo, subtitulo } = pickTituloSubtitulo(score, total);
+
+  // 4. Pega respostas abertas pra alimentar a manchete
   const palavraUnica = (respostas.q23 ?? "").toString().trim() || undefined;
   const fraseCompletar = (respostas.q24 ?? "").toString().trim() || undefined;
-  const musicaJu = (respostas.q25 ?? "").toString().trim() || undefined;
   const recado = (respostas.q26 ?? "").toString().trim() || undefined;
 
   // Prepara payload de erros pro Gemini comentar
@@ -149,26 +153,22 @@ export async function POST(request: NextRequest) {
 
   let manchete = "";
   let manchetePost = "";
-  let titulo = tier.title; // fallback estático
-  let subtitulo = tier.subtitle;
   try {
     const avaliacao = await gerarAvaliacao(
       {
         nome,
         score,
         total,
-        tier: tier.title,
+        titulo,
+        subtitulo,
         palavraUnica,
         fraseCompletar,
-        musicaJu,
         recado,
       },
       errosParaIA,
     );
     manchete = avaliacao.manchete;
     manchetePost = avaliacao.manchetePost;
-    if (avaliacao.titulo) titulo = avaliacao.titulo;
-    if (avaliacao.subtitulo) subtitulo = avaliacao.subtitulo;
 
     // Anexa cada comentário ao erro correspondente
     for (const c of avaliacao.comentarios) {
@@ -177,8 +177,8 @@ export async function POST(request: NextRequest) {
     }
   } catch (err) {
     console.error("gerarAvaliacao falhou:", err);
-    manchete = `${nome}, ${tier.title}! ${tier.subtitle}.`;
-    manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${tier.title}!`;
+    manchete = `${nome}, você foi ${titulo}! ${subtitulo}.`;
+    manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${titulo}!`;
   }
 
   // 4. Persiste tudo no Supabase (silencioso — falha de DB não quebra a resposta).
