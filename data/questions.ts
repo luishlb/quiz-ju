@@ -74,9 +74,15 @@ export const QUESTIONS: Question[] = [
     correctIndex: 2,
   },
   {
-    id: "q04", section: 1, type: "short", scores: true,
+    id: "q04", section: 1, type: "multiple", scores: true,
     prompt: "Qual o nome da praça da infância dela?",
-    aliases: ["praca dos brotos", "praça dos brotos", "brotos", "dos brotos"],
+    options: [
+      "Praça da Juventude (Robert Kennedy)",
+      "Praça da Sudene",
+      "Praça Marechal Soares D'Andréa",
+      "Praça Marcelo Pinheiro Filho",
+    ],
+    correctIndex: 0,
   },
   {
     id: "q05", section: 1, type: "short", scores: true,
