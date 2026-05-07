@@ -255,12 +255,18 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q30", section: 4, type: "short", scores: true,
-    prompt: "Em qual praia a Ju estava quando foi expulsa de uma ambulancha?",
+    prompt: "Onde a Ju estava quando foi expulsa de uma ambulancha?",
     aliases: [
+      // qualquer menção a Pará ou Cotijuba conta
+      "para", "pará", "no para", "no pará",
+      "estado do para", "estado do pará",
+      "pa", "/pa",
       "cotijuba", "praia de cotijuba", "ilha de cotijuba",
       "cotijuba pa", "cotijuba pará", "cotijuba no pará",
-      "praia cotijuba", "cotijuba/pa",
+      "cotijuba/pa", "praia cotijuba",
+      "belem", "belém", "belem do para", "belém do pará",
     ],
+    keywords: ["para", "pará", "cotijuba", "belem", "belém"],
   },
 
   // ── Seção 5 — Revista (não pontuam)

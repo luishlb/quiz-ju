@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { QUESTIONS } from "@/data/questions";
 import type { AnswersMap } from "@/lib/scoring";
 import {
@@ -53,9 +53,33 @@ export function QuizFlow() {
   const currentQuestion = QUESTIONS[index];
   const currentValue = answers[currentQuestion.id] ?? "";
 
+  /** Timer pendente do auto-advance (multiple choice).
+   * Mantemos numa ref pra debounce — clique novo cancela o anterior. */
+  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleAnswer = (val: string) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: val }));
+
+    // Auto-advance pra multiple choice — clique já passa pra próxima
+    // (com pequeno delay pra mostrar o feedback visual da seleção)
+    if (currentQuestion.type === "multiple") {
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = setTimeout(() => {
+        advance();
+        autoAdvanceRef.current = null;
+      }, 280);
+    }
   };
+
+  // Cancela qualquer timer pendente ao desmontar / mudar de pergunta
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceRef.current) {
+        clearTimeout(autoAdvanceRef.current);
+        autoAdvanceRef.current = null;
+      }
+    };
+  }, [index]);
 
   const canAdvance = useMemo(() => {
     const v = (currentValue ?? "").trim();
@@ -189,38 +213,48 @@ export function QuizFlow() {
             pular ↷
           </button>
 
-          <motion.button
-            type="button"
-            onClick={goNext}
-            disabled={!canAdvance}
-            whileHover={canAdvance ? { scale: 1.08, rotate: -2 } : {}}
-            whileTap={canAdvance ? { scale: 0.95 } : {}}
-            animate={
-              canAdvance
-                ? {
-                    scale: [1, 1.04, 1],
-                    boxShadow: [
-                      "4px 4px 0 rgba(0,0,0,0.25)",
-                      "4px 4px 0 rgba(0,0,0,0.25), 0 0 24px rgba(255,20,147,0.6)",
-                      "4px 4px 0 rgba(0,0,0,0.25)",
-                    ],
-                  }
-                : {}
-            }
-            transition={
-              canAdvance
-                ? { duration: 1.4, repeat: Infinity, ease: "easeInOut" }
-                : {}
-            }
-            className={[
-              "font-bubble text-base sm:text-lg tracking-wide px-6 py-3 rounded-full transition-colors",
-              canAdvance
-                ? "bg-rosa-choque text-white"
-                : "bg-rosa-pastel/60 text-preto-revista/40 cursor-not-allowed",
-            ].join(" ")}
-          >
-            {index + 1 >= total ? "VER RESULTADO 💎" : "PRÓXIMA →"}
-          </motion.button>
+          {/* PRÓXIMA: só pra perguntas que NÃO são multiple choice
+              (em MC o clique na opção já avança via auto-advance).
+              Pra MC fica um placeholder invisível só pra manter o
+              espaçamento simétrico (Voltar à esquerda, Pular no centro). */}
+          {currentQuestion.type !== "multiple" ? (
+            <motion.button
+              type="button"
+              onClick={goNext}
+              disabled={!canAdvance}
+              whileHover={canAdvance ? { scale: 1.08, rotate: -2 } : {}}
+              whileTap={canAdvance ? { scale: 0.95 } : {}}
+              animate={
+                canAdvance
+                  ? {
+                      scale: [1, 1.04, 1],
+                      boxShadow: [
+                        "4px 4px 0 rgba(0,0,0,0.25)",
+                        "4px 4px 0 rgba(0,0,0,0.25), 0 0 24px rgba(255,20,147,0.6)",
+                        "4px 4px 0 rgba(0,0,0,0.25)",
+                      ],
+                    }
+                  : {}
+              }
+              transition={
+                canAdvance
+                  ? { duration: 1.4, repeat: Infinity, ease: "easeInOut" }
+                  : {}
+              }
+              className={[
+                "font-bubble text-base sm:text-lg tracking-wide px-6 py-3 rounded-full transition-colors",
+                canAdvance
+                  ? "bg-rosa-choque text-white"
+                  : "bg-rosa-pastel/60 text-preto-revista/40 cursor-not-allowed",
+              ].join(" ")}
+            >
+              {index + 1 >= total ? "VER RESULTADO 💎" : "PRÓXIMA →"}
+            </motion.button>
+          ) : (
+            <span aria-hidden className="opacity-0 pointer-events-none px-5">
+              ← Voltar
+            </span>
+          )}
         </div>
 
         {/* Mascote saltitante centralizado embaixo */}
