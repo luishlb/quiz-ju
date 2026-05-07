@@ -2,10 +2,12 @@ import Image from "next/image";
 import { Countdown } from "@/components/ui/Countdown";
 import { JuMascot } from "@/components/ui/JuMascot";
 import { NameForm } from "@/components/ui/NameForm";
+import { TestModeFlag } from "@/components/ui/TestModeFlag";
 
 export default function Landing() {
   return (
       <main className="flex-1 flex flex-col items-center justify-start px-5 py-8 sm:py-12 gap-8 sm:gap-10 max-w-xl mx-auto w-full">
+        <TestModeFlag />
         {/* Hero — capa Capricho como polaroid grande */}
         <div className="relative w-full max-w-[340px] mx-auto">
           {/* estrelinhas decorativas */}

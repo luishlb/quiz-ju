@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { JuMascot } from "@/components/ui/JuMascot";
 import type { TitleTier } from "@/lib/titles";
-import { clearAll, getAnswers, getNome, getTempoFinal } from "@/lib/storage";
+import {
+  clearAll,
+  getAnswers,
+  getNome,
+  getTempoFinal,
+  getTestMode,
+} from "@/lib/storage";
 
 type WrongItem = {
   id: string;
@@ -35,6 +41,7 @@ export default function ResultadoPage() {
   const [estado, setEstado] = useState<"calculando" | "pronto" | "erro">("calculando");
   const [data, setData] = useState<AvaliacaoResp | null>(null);
   const [erro, setErro] = useState<string>("");
+  const [testMode, setIsTest] = useState(false);
 
   useEffect(() => {
     const nome = getNome();
@@ -49,11 +56,13 @@ export default function ResultadoPage() {
     }
 
     const tempoSegundos = getTempoFinal();
+    const isTest = getTestMode();
+    setIsTest(isTest);
 
     fetch("/api/avaliar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, respostas, tempoSegundos }),
+      body: JSON.stringify({ nome, respostas, tempoSegundos, skipPersist: isTest }),
     })
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -72,7 +81,7 @@ export default function ResultadoPage() {
   if (estado === "calculando") return <Calculando />;
   if (estado === "erro") return <Erro msg={erro} />;
   if (!data) return null;
-  return <Resultado data={data} />;
+  return <Resultado data={data} testMode={testMode} />;
 }
 
 function Calculando() {
@@ -113,7 +122,7 @@ function Erro({ msg }: { msg: string }) {
   );
 }
 
-function Resultado({ data }: { data: AvaliacaoResp }) {
+function Resultado({ data, testMode }: { data: AvaliacaoResp; testMode: boolean }) {
   const { score, total, tier, titulo, subtitulo, manchete, manchetePost, wrong } = data;
   const pct = Math.round((score / total) * 100);
   const nome = typeof window !== "undefined" ? getNome() ?? "amigx" : "amigx";
@@ -134,6 +143,17 @@ function Resultado({ data }: { data: AvaliacaoResp }) {
 
   return (
     <main className="flex-1 flex flex-col items-center px-5 py-8 gap-6 max-w-xl mx-auto w-full">
+      {testMode && (
+        <div className="w-full bg-amarelo-glitter/40 border-2 border-amarelo-glitter rounded-xl p-3 text-center">
+          <p className="font-display text-xs uppercase tracking-widest text-preto-revista">
+            🧪 modo teste — esse resultado <strong>NÃO foi salvo</strong> no DB
+          </p>
+          <p className="font-body text-[11px] text-preto-revista/60 mt-1">
+            pra desligar, abre <code>/?test=0</code> e refaz o teste
+          </p>
+        </div>
+      )}
+
       {/* Tier card */}
       <motion.div
         initial={{ scale: 0.5, opacity: 0, rotate: -8 }}

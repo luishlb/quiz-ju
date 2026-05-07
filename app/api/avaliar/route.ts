@@ -28,6 +28,8 @@ type AvaliarRequest = {
   nome: string;
   respostas: AnswersMap;
   tempoSegundos?: number;
+  /** Quando true, pula o INSERT no Supabase (modo teste / debug) */
+  skipPersist?: boolean;
 };
 
 type WrongItem = {
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const { nome, respostas, tempoSegundos } = body;
+  const { nome, respostas, tempoSegundos, skipPersist } = body;
   if (!nome || typeof respostas !== "object") {
     return NextResponse.json({ error: "Payload incompleto" }, { status: 400 });
   }
@@ -183,19 +185,22 @@ export async function POST(request: NextRequest) {
 
   // 4. Persiste tudo no Supabase (silencioso — falha de DB não quebra a resposta).
   // Cada chamada do /resultado vira UMA linha — refazer = nova entrada com timestamp.
-  const userAgent = request.headers.get("user-agent");
-  await registrarResultado({
-    nome,
-    pontuacao: score,
-    total,
-    titulo,
-    subtitulo,
-    manchete,
-    manchete_post: manchetePost,
-    respostas: respostas as Record<string, string>,
-    tempo_segundos: typeof tempoSegundos === "number" ? tempoSegundos : null,
-    user_agent: userAgent,
-  });
+  // PULA quando skipPersist=true (modo teste via ?test=1 na URL).
+  if (!skipPersist) {
+    const userAgent = request.headers.get("user-agent");
+    await registrarResultado({
+      nome,
+      pontuacao: score,
+      total,
+      titulo,
+      subtitulo,
+      manchete,
+      manchete_post: manchetePost,
+      respostas: respostas as Record<string, string>,
+      tempo_segundos: typeof tempoSegundos === "number" ? tempoSegundos : null,
+      user_agent: userAgent,
+    });
+  }
 
   return NextResponse.json({
     score,

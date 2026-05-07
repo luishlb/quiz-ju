@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
   index: "quiz-ju:indice",
   start: "quiz-ju:inicio",
   tempo: "quiz-ju:tempo",
+  test: "quiz-ju:modo-teste",
 } as const;
 
 // ── Nome
@@ -72,9 +73,22 @@ export function getTempoFinal(): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/** Apaga TODOS os dados do quiz (botão "Refazer teste") */
+/** Apaga TODOS os dados do quiz (botão "Refazer teste").
+ *  IMPORTANTE: NÃO apaga o flag de modo-teste — ele tem ciclo de vida próprio
+ *  (controlado por URL ?test=1/0). */
 export function clearAll(): void {
+  const keepTest = localStorage.getItem(STORAGE_KEYS.test);
   for (const key of Object.values(STORAGE_KEYS)) {
     localStorage.removeItem(key);
   }
+  if (keepTest) localStorage.setItem(STORAGE_KEYS.test, keepTest);
+}
+
+// ── Modo teste (não persiste no DB)
+export function getTestMode(): boolean {
+  return localStorage.getItem(STORAGE_KEYS.test) === "1";
+}
+export function setTestMode(on: boolean): void {
+  if (on) localStorage.setItem(STORAGE_KEYS.test, "1");
+  else localStorage.removeItem(STORAGE_KEYS.test);
 }

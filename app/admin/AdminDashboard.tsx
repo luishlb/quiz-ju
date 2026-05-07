@@ -63,6 +63,38 @@ export function AdminDashboard() {
     router.refresh();
   };
 
+  const handleDeleteOne = async (id: string, nome: string) => {
+    if (!window.confirm(`Apagar a tentativa de "${nome}"? Não dá pra desfazer.`)) return;
+    const res = await fetch(`/api/admin/respostas/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      alert("Falhou ao apagar");
+      return;
+    }
+    setRows((prev) => (prev ? prev.filter((r) => r.id !== id) : prev));
+  };
+
+  const handleClearAll = async () => {
+    const ok1 = window.confirm(
+      "APAGAR TODAS as tentativas? Esse é destrutivo, sem volta.",
+    );
+    if (!ok1) return;
+    const typed = window.prompt(
+      'Pra confirmar, digite "limpar tudo" (sem aspas):',
+    );
+    if (typed?.toLowerCase().trim() !== "limpar tudo") {
+      alert("cancelado");
+      return;
+    }
+    const res = await fetch("/api/admin/respostas?confirm=1", {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      alert("Falhou ao limpar tudo");
+      return;
+    }
+    setRows([]);
+  };
+
   const exportCSV = () => {
     if (!rows) return;
     const header = [
@@ -132,6 +164,32 @@ export function AdminDashboard() {
     );
   }
 
+  // Pin do Luis em #1 — zoeira (ele é o autor do quiz, juiz e jogador).
+  // Pega a MELHOR tentativa dele (já sorted) e move pra topo.
+  // Se ele não fez ainda, mostra placeholder.
+  const luisIdx = rows.findIndex((r) => isLuis(r.nome));
+  const rankingRows: Array<Row & { _placeholder?: boolean }> =
+    luisIdx >= 0
+      ? [rows[luisIdx], ...rows.filter((_, i) => i !== luisIdx)]
+      : [
+          {
+            id: "luis-placeholder",
+            created_at: "",
+            nome: "Luis",
+            pontuacao: 0,
+            total: rows[0]?.total ?? 25,
+            titulo: null,
+            subtitulo: null,
+            manchete: null,
+            manchete_post: null,
+            respostas: null,
+            tempo_segundos: null,
+            user_agent: null,
+            _placeholder: true,
+          },
+          ...rows,
+        ];
+
   // q26 = recado pra Ju (pergunta aberta long, vai pro mural)
   const recados = rows
     .map((r) => ({ nome: r.nome, recado: r.respostas?.q26 ?? "" }))
@@ -170,6 +228,14 @@ export function AdminDashboard() {
           </button>
           <button
             type="button"
+            onClick={handleClearAll}
+            className="bg-white border-2 border-red-400 text-red-600 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full hover:bg-red-50"
+            title="apaga TODAS as tentativas"
+          >
+            🗑️ limpar tudo
+          </button>
+          <button
+            type="button"
             onClick={handleLogout}
             className="bg-white border-2 border-rosa-pastel text-preto-revista/70 font-display text-xs uppercase tracking-wider px-4 py-2 rounded-full hover:bg-rosa-pastel/30"
           >
@@ -196,7 +262,7 @@ export function AdminDashboard() {
 
       {/* Ranking */}
       <Section title="🏆 Ranking">
-        {rows.length === 0 ? (
+        {rows.length === 0 && luisIdx < 0 ? (
           <p className="font-body text-preto-revista/60 text-sm">
             ninguém respondeu ainda
           </p>
@@ -211,34 +277,63 @@ export function AdminDashboard() {
                   <th className="px-2 py-2 text-right">pontos</th>
                   <th className="px-2 py-2 text-right">tempo</th>
                   <th className="px-2 py-2 text-right">quando</th>
+                  <th className="px-2 py-2 text-center w-10">×</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r, i) => (
-                  <tr
-                    key={r.id}
-                    className={
-                      i % 2 === 0 ? "bg-white" : "bg-rosa-pastel/10"
-                    }
-                  >
-                    <td className="px-3 py-2 font-bubble text-rosa-choque">
-                      {i + 1}
-                    </td>
-                    <td className="px-3 py-2 font-display">{r.nome}</td>
-                    <td className="px-3 py-2 font-display text-xs uppercase text-preto-revista/70">
-                      {r.titulo}
-                    </td>
-                    <td className="px-2 py-2 text-right font-bubble text-rosa-choque">
-                      {r.pontuacao}/{r.total}
-                    </td>
-                    <td className="px-2 py-2 text-right font-body text-preto-revista/60 text-xs">
-                      {formatTempo(r.tempo_segundos)}
-                    </td>
-                    <td className="px-2 py-2 text-right font-body text-preto-revista/50 text-[11px]">
-                      {formatData(r.created_at)}
-                    </td>
-                  </tr>
-                ))}
+                {rankingRows.map((r, i) => {
+                  const isLuisRow = i === 0;
+                  return (
+                    <tr
+                      key={r.id}
+                      className={
+                        isLuisRow
+                          ? "bg-amarelo-glitter/25 border-y-2 border-amarelo-glitter"
+                          : i % 2 === 0
+                            ? "bg-white"
+                            : "bg-rosa-pastel/10"
+                      }
+                    >
+                      <td className="px-3 py-2 font-bubble text-rosa-choque text-base">
+                        {isLuisRow ? "👑" : i + 1}
+                      </td>
+                      <td className="px-3 py-2 font-display">
+                        <div className="font-bubble text-rosa-choque text-base">
+                          {r.nome}
+                        </div>
+                        {isLuisRow && (
+                          <div className="font-body italic text-[11px] text-preto-revista/70 normal-case">
+                            o melhor amigo disparado — escrevi o quiz, sou juiz e jogador 🤷
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 font-display text-xs uppercase text-preto-revista/70">
+                        {r._placeholder ? "(esperando aparecer)" : r.titulo}
+                      </td>
+                      <td className="px-2 py-2 text-right font-bubble text-rosa-choque">
+                        {r._placeholder ? "—" : `${r.pontuacao}/${r.total}`}
+                      </td>
+                      <td className="px-2 py-2 text-right font-body text-preto-revista/60 text-xs">
+                        {r._placeholder ? "—" : formatTempo(r.tempo_segundos)}
+                      </td>
+                      <td className="px-2 py-2 text-right font-body text-preto-revista/50 text-[11px]">
+                        {r._placeholder ? "—" : formatData(r.created_at)}
+                      </td>
+                      <td className="px-2 py-2 text-center">
+                        {!r._placeholder && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteOne(r.id, r.nome)}
+                            className="text-preto-revista/40 hover:text-red-600 transition-colors"
+                            title="apagar essa tentativa"
+                          >
+                            🗑️
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -344,6 +439,17 @@ function Section({
       {children}
     </section>
   );
+}
+
+/** Detecta se o nome é "Luis" (ou variações: Luís, Luiz) — case-insensitive,
+ *  acentos opcionais. Usado pra fixar o autor do quiz no #1 do ranking. */
+function isLuis(nome: string): boolean {
+  const n = nome
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+  return n === "luis" || n === "luiz";
 }
 
 function formatTempo(s: number | null): string {

@@ -51,3 +51,35 @@ export async function GET() {
 
   return NextResponse.json({ rows: data as RespostaRow[] });
 }
+
+/** DELETE /api/admin/respostas — apaga TODAS as tentativas (limpar tabela).
+ *  Tem que passar `?confirm=1` na query string pra evitar acidentes. */
+export async function DELETE(request: Request) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "não autorizado" }, { status: 401 });
+  }
+  const { searchParams } = new URL(request.url);
+  if (searchParams.get("confirm") !== "1") {
+    return NextResponse.json(
+      { error: "?confirm=1 obrigatório pra limpar tudo" },
+      { status: 400 },
+    );
+  }
+  const sb = getSupabase();
+  if (!sb) {
+    return NextResponse.json(
+      { error: "Supabase não configurado" },
+      { status: 500 },
+    );
+  }
+  // Supabase exige um filtro no DELETE. Filtro que sempre bate:
+  // created_at >= epoch zero.
+  const { error } = await sb
+    .from("respostas_ju")
+    .delete()
+    .gte("created_at", "1970-01-01");
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ ok: true });
+}
