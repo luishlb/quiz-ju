@@ -136,9 +136,16 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
   {
-    id: "q14", section: 3, type: "short", scores: true,
-    prompt: "Qual a música preferida da adolescência (que ela surta quando escuta)?",
-    aliases: ["a little respect", "erasure", "little respect", "a little respect erasure"],
+    id: "q14", section: 3, type: "multiple", scores: true,
+    prompt: "Qual a música que ela surta quando escuta (preferida da adolescência)?",
+    options: [
+      "I Want It That Way — Backstreet Boys",
+      "A Little Respect — Erasure",
+      "Bye Bye Bye — *NSYNC",
+      "Self Esteem — The Offspring",
+      "Photograph — Ed Sheeran",
+    ],
+    correctIndex: 1,
   },
   {
     id: "q15", section: 3, type: "multiple", scores: true,
