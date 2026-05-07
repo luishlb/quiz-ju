@@ -17,14 +17,15 @@ import { useEffect, useState } from "react";
 type Mood = "feliz" | "triste";
 type Size = "sm" | "md" | "lg";
 
-const HEADS: ReadonlyArray<{ src: string; objectPosition: string }> = [
-  // foto bem expressiva, plano fechado, fundo simples
-  { src: "/ju/cabeca-1.jpg", objectPosition: "50% 28%" },
-  // sorriso amplo ao ar livre, cabeça centrada
-  { src: "/ju/cabeca-2.jpg", objectPosition: "50% 38%" },
-  // tiara de oncinha — face mais à direita pra cortar o Luis no canto esquerdo
-  { src: "/ju/cabeca-3.jpg", objectPosition: "62% 22%" },
+const HEADS: ReadonlyArray<{ src: string }> = [
+  { src: "/ju/cabeca-1.png" },
+  { src: "/ju/cabeca-2.png" },
+  // cabeca-3 (Ju de óculos) é a mais engraçada (fave do Luis)
+  { src: "/ju/cabeca-3.png" },
 ];
+
+/** Distribuição com peso 2x pra cabeca-3 — usuário marcou como mais engraçada */
+const WEIGHTED_HEAD_IDX: ReadonlyArray<number> = [0, 1, 2, 2];
 
 const SIZES: Record<Size, { box: number; head: number; body: number }> = {
   sm: { box: 90, head: 56, body: 50 },
@@ -44,7 +45,8 @@ export function JuMascot({
   const [headIdx, setHeadIdx] = useState<number | null>(null);
 
   useEffect(() => {
-    setHeadIdx(Math.floor(Math.random() * HEADS.length));
+    const pick = WEIGHTED_HEAD_IDX[Math.floor(Math.random() * WEIGHTED_HEAD_IDX.length)];
+    setHeadIdx(pick);
   }, []);
 
   if (headIdx === null) return null; // evita mismatch SSR/CSR
@@ -75,14 +77,10 @@ export function JuMascot({
         </>
       )}
 
-      {/* CABEÇA (foto real circular) */}
+      {/* CABEÇA (foto real PNG transparente) */}
       <div className="ju-head" style={{ width: dims.head, height: dims.head }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={head.src}
-          alt="Ju"
-          style={{ objectPosition: head.objectPosition }}
-        />
+        <img src={head.src} alt="Ju" />
         {/* lágrima caindo (só triste) */}
         {mood === "triste" && (
           <span className="ju-tear" aria-hidden>
