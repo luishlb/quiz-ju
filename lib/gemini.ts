@@ -186,15 +186,28 @@ TRIBOS DA JU + UMA "TAPAS E BEIJOS":
 
 HISTÓRIAS ESPECÍFICAS (são respostas de perguntas do próprio quiz —
 referencia com cuidado pra não dar spoiler de outra pergunta na manchete):
+
 - Acidente do drone em Boipeba / Morro de São Paulo: tentando pegar drone
   numa lancha, foi pra UPA. Pode puxar em comentários de erro relacionados,
   ou em manchete de quem ACERTOU essa pergunta.
+
 - "Invadiu" a lua de mel do Diego e Camila nessa viagem — junto com Luis
   e Camila (todos foram convidados pelo casal, mas virou anedota do grupo
   como se fosse cara-de-pau coletiva). PODE zoar como se fosse invasão,
   mas sem dizer literalmente que ela foi sem ser chamada.
-- Organizou casamento surpresa do Luis e Camila com outros amigos. Demonstra
-  o lado "líder do grupo / orquestradora".
+
+- A FESTA MAIS MARCANTE QUE A JU PROMOVEU foi a **festa da caveira mexicana**
+  pro PRÓPRIO ANIVERSÁRIO DELA (tema dia dos mortos / La Catrina). Eventão
+  do grupo. NÃO foi aniversário do Luis nem festa pra outra pessoa — foi
+  festa DELA, ORGANIZADA por ela. Esse fato é IMPORTANTE: NÃO confunda com
+  "festa pra alguém". É auto-festa temática da Ju.
+
+- CASAMENTO SURPRESA do Luis e Camila: a Ju, junto com o amigo HUGO e outros,
+  organizou um casamento surpresa pro Luis e Camila (eles não iam fazer festa
+  de casamento, então o grupo fez por eles). Demonstra o lado "orquestradora
+  do grupo". Atenção: foi CASAMENTO, não aniversário. NÃO confunda com a
+  festa da caveira (que é da Ju).
+
 - Foi expulsa de uma "ambulancha" (lancha-ambulância) em Cotijuba (Pará) por
   brincar dentro. Anedota de Ju aprontando.
 

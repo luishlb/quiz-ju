@@ -229,7 +229,8 @@ export const QUESTIONS: Question[] = [
   {
     id: "q20", section: 2, type: "short", scores: true,
     prompt: "Qual a festa mais marcante que a Ju já promoveu?",
-    keywords: ["caveira", "aniversario do luis", "aniversário do luis", "luis 2018", "festa do luis"],
+    // resposta certa: festa da caveira mexicana (foi o aniversário DELA)
+    keywords: ["caveira", "mexicana", "dia dos mortos", "muertos", "catrina"],
   },
   {
     id: "q27", section: 2, type: "short", scores: true,
