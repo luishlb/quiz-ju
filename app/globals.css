@@ -103,7 +103,8 @@ body {
 }
 
 .ju-mascot[data-mood="triste"] {
-  animation: ju-sob 1.6s ease-in-out infinite;
+  /* tremida curta de raiva — leve e rápida */
+  animation: ju-rage 0.18s steps(2) infinite;
 }
 
 @keyframes ju-bounce {
@@ -111,9 +112,9 @@ body {
   100% { transform: translateY(-10px) rotate(2deg); }
 }
 
-@keyframes ju-sob {
-  0%, 100% { transform: translateY(0) rotate(-1deg); }
-  50%      { transform: translateY(-3px) rotate(1deg); }
+@keyframes ju-rage {
+  0%   { transform: translate(-1px, 0) rotate(-1deg); }
+  100% { transform: translate(1px, 0) rotate(1deg); }
 }
 
 .ju-head {
@@ -134,23 +135,22 @@ body {
 }
 
 .ju-mascot[data-mood="triste"] .ju-head img {
-  filter: saturate(0.7) brightness(0.95);
+  filter: saturate(1.1) contrast(1.1) hue-rotate(-5deg);
 }
 
-.ju-tear {
+/* Nuvenzinha de irritação 💢 e bufada 😤 — flutuam ao redor da cabeça */
+.ju-rage {
   position: absolute;
-  bottom: -6px;
-  right: 18%;
   font-size: 18px;
-  animation: ju-tear-fall 1.4s ease-in infinite;
-  filter: drop-shadow(0 1px 2px rgba(0, 122, 255, 0.5));
+  animation: ju-rage-float 0.8s ease-in-out infinite;
+  pointer-events: none;
 }
+.ju-rage-1 { top: -8px; left: -2%; font-size: 22px; animation-delay: 0s; }
+.ju-rage-2 { top: 8%;  right: -8%; font-size: 22px; animation-delay: 0.4s; }
 
-@keyframes ju-tear-fall {
-  0%   { transform: translateY(-6px); opacity: 0; }
-  20%  { opacity: 1; }
-  90%  { transform: translateY(20px); opacity: 1; }
-  100% { transform: translateY(28px); opacity: 0; }
+@keyframes ju-rage-float {
+  0%, 100% { transform: translateY(0) scale(1) rotate(-6deg); opacity: 0.85; }
+  50%      { transform: translateY(-4px) scale(1.15) rotate(6deg); opacity: 1; }
 }
 
 .ju-body {

@@ -5,11 +5,8 @@
  * Y2K com toda a decoração) e sobrepõe SÓ o texto dinâmico via Satori.
  *
  * Fontes Capricho — Bungee (chunky retro pra título) + Lilita One
- * (bubble bold pra score). Carregadas do Google Fonts no boot do worker
- * via UA antigo (que retorna TTF, formato que o Satori entende).
- *
- * Se as fontes falharem ao carregar, cai no sans-serif default — degrada
- * graciosamente sem quebrar a rota.
+ * (bubble bold pra score). Lidas via fs do diretório lib/fonts no boot
+ * do worker. Sem fetch externo: zero falha de rede.
  */
 
 import { readFileSync } from "node:fs";
@@ -19,65 +16,33 @@ import type { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
-// BG renderizado uma vez no boot
-const BG_PATH = join(process.cwd(), "public", "post-bg.png");
-const BG_DATA_URL = `data:image/png;base64,${readFileSync(BG_PATH).toString("base64")}`;
+// Assets carregados uma vez no boot
+const ROOT = process.cwd();
+const BG_DATA_URL = `data:image/png;base64,${readFileSync(join(ROOT, "public", "post-bg.png")).toString("base64")}`;
+const BUNGEE_TTF = readFileSync(join(ROOT, "lib", "fonts", "Bungee-Regular.ttf"));
+const LILITA_TTF = readFileSync(join(ROOT, "lib", "fonts", "LilitaOne-Regular.ttf"));
 
-const ROSA_CHOQUE = "#FF1493";
-const LILAS = "#C77DFF";
-const PRETO = "#1A1A1A";
+const FONTS = [
+  {
+    name: "Bungee",
+    data: BUNGEE_TTF,
+    weight: 400 as const,
+    style: "normal" as const,
+  },
+  {
+    name: "Lilita One",
+    data: LILITA_TTF,
+    weight: 400 as const,
+    style: "normal" as const,
+  },
+];
 
 const FAMILY_BUNGEE = "Bungee";
 const FAMILY_LILITA = "Lilita One";
 
-/**
- * Busca o TTF do Google Fonts. UA antigo (IE9) força a CDN a devolver
- * .ttf em vez de .woff2 (Satori prefere TTF).
- */
-async function loadGoogleFontTTF(family: string): Promise<ArrayBuffer> {
-  const familyParam = family.replace(/\s+/g, "+");
-  const url = `https://fonts.googleapis.com/css2?family=${familyParam}`;
-  const cssRes = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)",
-    },
-  });
-  if (!cssRes.ok) throw new Error(`CSS fetch ${cssRes.status} for ${family}`);
-  const css = await cssRes.text();
-  const match = css.match(/src:\s*url\((https:\/\/[^)]+\.ttf)\)/);
-  if (!match) throw new Error(`TTF não encontrado no CSS de ${family}`);
-  const ttfRes = await fetch(match[1]);
-  if (!ttfRes.ok) throw new Error(`TTF fetch ${ttfRes.status} for ${family}`);
-  return ttfRes.arrayBuffer();
-}
-
-type FontEntry = {
-  name: string;
-  data: ArrayBuffer;
-  weight: 400;
-  style: "normal";
-};
-
-let cachedFonts: FontEntry[] | null = null;
-
-async function getFonts(): Promise<FontEntry[]> {
-  if (cachedFonts) return cachedFonts;
-  try {
-    const [bungee, lilita] = await Promise.all([
-      loadGoogleFontTTF(FAMILY_BUNGEE),
-      loadGoogleFontTTF(FAMILY_LILITA),
-    ]);
-    cachedFonts = [
-      { name: FAMILY_BUNGEE, data: bungee, weight: 400, style: "normal" },
-      { name: FAMILY_LILITA, data: lilita, weight: 400, style: "normal" },
-    ];
-    return cachedFonts;
-  } catch (err) {
-    console.error("[og] falha ao carregar fontes Google, usando default:", err);
-    return [];
-  }
-}
+const ROSA_CHOQUE = "#FF1493";
+const LILAS = "#C77DFF";
+const PRETO = "#1A1A1A";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -90,8 +55,6 @@ export async function GET(request: NextRequest) {
   const pct = Math.round(
     (Number.parseInt(score, 10) / Number.parseInt(total, 10)) * 100,
   );
-
-  const fonts = await getFonts();
 
   return new ImageResponse(
     (
@@ -138,7 +101,7 @@ export async function GET(request: NextRequest) {
             style={{
               display: "flex",
               fontFamily: FAMILY_BUNGEE,
-              fontSize: 80,
+              fontSize: 62,
               color: ROSA_CHOQUE,
               textAlign: "center",
               lineHeight: 1,
@@ -255,7 +218,7 @@ export async function GET(request: NextRequest) {
     {
       width: 1080,
       height: 1920,
-      fonts,
+      fonts: FONTS,
     },
   );
 }

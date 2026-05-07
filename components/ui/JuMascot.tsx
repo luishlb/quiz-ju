@@ -58,11 +58,12 @@ export function JuMascot({
       <div className="ju-head" style={{ width: dims.head, height: dims.head }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={HEAD_SRC} alt="Ju" />
-        {/* lágrima caindo (só triste) */}
+        {/* nuvem de irritação (só triste) */}
         {mood === "triste" && (
-          <span className="ju-tear" aria-hidden>
-            💧
-          </span>
+          <>
+            <span className="ju-rage ju-rage-1" aria-hidden>💢</span>
+            <span className="ju-rage ju-rage-2" aria-hidden>😤</span>
+          </>
         )}
       </div>
 
@@ -122,37 +123,77 @@ function BodyHappy() {
 }
 
 /**
- * Corpo triste — vestido cinza, ombros caídos, braços pendurados.
- * Frame A vs B: variação sutil de altura (sob).
+ * Corpo "puta a vida" — vestido lilás, mão direita levantada com dedo do meio
+ * em pé, mão esquerda na cintura (atitude). Frame A/B: dedo balançando levemente
+ * (efeito "tô descontente, sim").
+ *
+ * SVG: o dedo do meio é desenhado como um retângulo arredondado vertical na
+ * mão direita, com os outros dedos representados como pequenos retângulos
+ * dobrados embaixo. Estética cartoon, sem nada explícito.
  */
 function BodySad() {
   return (
     <g>
-      {/* vestido (mais sóbrio) */}
+      {/* vestido lilás (dedo médio merece roxo de raiva) */}
       <path
-        d="M 30 10 L 70 10 L 76 70 L 50 75 L 24 70 Z"
-        fill="#C77DFF"
-        opacity="0.65"
+        d="M 30 10 L 70 10 L 78 70 L 50 75 L 22 70 Z"
+        fill="#9D4EDD"
         stroke="#1A1A1A"
         strokeWidth="1.5"
       />
-      {/* pernas levemente juntas */}
-      <line x1="44" y1="75" x2="44" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
-      <line x1="56" y1="75" x2="56" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
+      {/* pernas firmes, abertas (postura de revolta) */}
+      <line x1="40" y1="75" x2="38" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
+      <line x1="60" y1="75" x2="62" y2="100" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
 
-      {/* braços pendurados, levemente pra dentro (frame A — neutro) */}
+      {/* mão esquerda fixa na cintura (não anima) */}
+      <path d="M 30 18 Q 18 28 22 45 L 32 42" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <circle cx="32" cy="42" r="4" fill="#9D4EDD" stroke="#1A1A1A" strokeWidth="1.5" />
+
+      {/* === BRAÇO DIREITO COM DEDO DO MEIO === */}
+
+      {/* Frame A — dedo levemente inclinado pra esquerda */}
       <g className="ju-frame-a">
-        <path d="M 30 15 Q 22 35 28 55" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <path d="M 70 15 Q 78 35 72 55" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <circle cx="28" cy="55" r="3.5" fill="#E0CFE8" stroke="#1A1A1A" strokeWidth="1" />
-        <circle cx="72" cy="55" r="3.5" fill="#E0CFE8" stroke="#1A1A1A" strokeWidth="1" />
+        {/* braço */}
+        <path d="M 70 18 Q 82 8 84 -8" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
+        {/* punho */}
+        <circle cx="84" cy="-8" r="5.5" fill="#FFD9C9" stroke="#1A1A1A" strokeWidth="1.5" />
+        {/* dedo do meio levantado (retângulo vertical arredondado) */}
+        <rect
+          x="81.5"
+          y="-22"
+          width="5"
+          height="13"
+          rx="2.5"
+          fill="#FFD9C9"
+          stroke="#1A1A1A"
+          strokeWidth="1.5"
+          transform="rotate(-4 84 -15)"
+        />
+        {/* unha (detalhe) */}
+        <line x1="82" y1="-21" x2="86" y2="-21" stroke="#1A1A1A" strokeWidth="0.8" strokeLinecap="round" />
+        {/* dedinhos dobrados (laterais do punho) */}
+        <line x1="79.5" y1="-7" x2="78" y2="-3" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="88.5" y1="-7" x2="90" y2="-3" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
       </g>
-      {/* mesmo braço, micro variação pra simular soluço (frame B) */}
+
+      {/* Frame B — dedo levemente inclinado pra direita (balança) */}
       <g className="ju-frame-b">
-        <path d="M 30 15 Q 24 32 30 50" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <path d="M 70 15 Q 76 32 70 50" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <circle cx="30" cy="50" r="3.5" fill="#E0CFE8" stroke="#1A1A1A" strokeWidth="1" />
-        <circle cx="70" cy="50" r="3.5" fill="#E0CFE8" stroke="#1A1A1A" strokeWidth="1" />
+        <path d="M 70 18 Q 84 8 86 -6" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <circle cx="86" cy="-6" r="5.5" fill="#FFD9C9" stroke="#1A1A1A" strokeWidth="1.5" />
+        <rect
+          x="83.5"
+          y="-20"
+          width="5"
+          height="13"
+          rx="2.5"
+          fill="#FFD9C9"
+          stroke="#1A1A1A"
+          strokeWidth="1.5"
+          transform="rotate(4 86 -13)"
+        />
+        <line x1="84" y1="-19" x2="88" y2="-19" stroke="#1A1A1A" strokeWidth="0.8" strokeLinecap="round" />
+        <line x1="81.5" y1="-5" x2="80" y2="-1" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="90.5" y1="-5" x2="92" y2="-1" stroke="#1A1A1A" strokeWidth="1.2" strokeLinecap="round" />
       </g>
     </g>
   );

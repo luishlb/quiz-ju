@@ -179,6 +179,16 @@ export function QuizFlow() {
           >
             ← Voltar
           </button>
+
+          {/* Pular: entre voltar e próxima — mais visível */}
+          <button
+            type="button"
+            onClick={goSkip}
+            className="font-display text-xs sm:text-sm uppercase tracking-wider text-rosa-choque/80 hover:text-rosa-choque underline underline-offset-4 decoration-dotted transition-colors px-2"
+          >
+            pular ↷
+          </button>
+
           <motion.button
             type="button"
             onClick={goNext}
@@ -213,20 +223,9 @@ export function QuizFlow() {
           </motion.button>
         </div>
 
-        {/* Mascote saltitante centralizado acima do pular */}
+        {/* Mascote saltitante centralizado embaixo */}
         <div className="flex justify-center mt-4">
           <JuMascot mood="feliz" size="sm" />
-        </div>
-
-        {/* Pular: discreto, abaixo do mascote */}
-        <div className="text-center mt-2">
-          <button
-            type="button"
-            onClick={goSkip}
-            className="font-display text-sm uppercase tracking-wider text-rosa-choque/80 hover:text-rosa-choque underline underline-offset-4 decoration-dotted transition-colors"
-          >
-            não sei essa, pular ↷
-          </button>
         </div>
 
         <p className="text-center mt-3 text-[11px] text-preto-revista/50 font-display tracking-wide">
