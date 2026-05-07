@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 /**
- * Bonequinho meme da Ju — cabeção (foto real recortada em círculo)
- * em cima de um corpinho cartoon SVG. Anima entre 2 frames pra dar
- * sensação de GIF.
+ * Bonequinho meme da Ju — cabeção (foto real PNG transparente, recorte
+ * preciso só do rosto) em cima de um corpinho cartoon SVG.
+ * Anima entre 2 frames pra dar sensação de GIF.
  *
  * - mood "feliz": pula com braços pra cima, hearts/sparkles flutuando
  * - mood "triste": curvado, lágrima caindo, body cor mais opaca
- *
- * A cabeça é sorteada entre 3 fotos no mount. Mesmo bonequinho com
- * 3 caras possíveis.
  */
 
 type Mood = "feliz" | "triste";
 type Size = "sm" | "md" | "lg";
 
-const HEADS: ReadonlyArray<{ src: string }> = [
-  { src: "/ju/cabeca-1.png" },
-  { src: "/ju/cabeca-2.png" },
-  // cabeca-3 (Ju de óculos) é a mais engraçada (fave do Luis)
-  { src: "/ju/cabeca-3.png" },
-];
-
-/** Distribuição com peso 2x pra cabeca-3 — usuário marcou como mais engraçada */
-const WEIGHTED_HEAD_IDX: ReadonlyArray<number> = [0, 1, 2, 2];
+const HEAD_SRC = "/ju/cabeca.png";
 
 const SIZES: Record<Size, { box: number; head: number; body: number }> = {
   sm: { box: 90, head: 56, body: 50 },
@@ -42,17 +29,7 @@ export function JuMascot({
   size?: Size;
   className?: string;
 }) {
-  const [headIdx, setHeadIdx] = useState<number | null>(null);
-
-  useEffect(() => {
-    const pick = WEIGHTED_HEAD_IDX[Math.floor(Math.random() * WEIGHTED_HEAD_IDX.length)];
-    setHeadIdx(pick);
-  }, []);
-
-  if (headIdx === null) return null; // evita mismatch SSR/CSR
-
   const dims = SIZES[size];
-  const head = HEADS[headIdx];
 
   return (
     <div
@@ -80,7 +57,7 @@ export function JuMascot({
       {/* CABEÇA (foto real PNG transparente) */}
       <div className="ju-head" style={{ width: dims.head, height: dims.head }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={head.src} alt="Ju" />
+        <img src={HEAD_SRC} alt="Ju" />
         {/* lágrima caindo (só triste) */}
         {mood === "triste" && (
           <span className="ju-tear" aria-hidden>
