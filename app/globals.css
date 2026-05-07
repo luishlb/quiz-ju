@@ -162,8 +162,8 @@ body {
  * Tamanho proporcional ao corpo: ~45% — mais ou menos uma "mão" cartoon. */
 .ju-finger {
   position: absolute;
-  top: 41%;
-  left: 72%;
+  top: 33%;
+  left: 71%;
   font-size: calc(var(--body-size) * 0.28);
   line-height: 1;
   pointer-events: none;
