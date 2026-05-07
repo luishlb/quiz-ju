@@ -1,7 +1,14 @@
 /**
  * Cliente Supabase server-side.
- * Lê SUPABASE_URL e SUPABASE_ANON_KEY do env. Sem essas vars, retorna null
- * e o resto do código segue funcionando (apenas pula o INSERT no DB).
+ *
+ * Usa a SERVICE KEY (secret) — bypassa Row Level Security, ideal pra
+ * inserts server-side (esse arquivo NUNCA roda no client; route handlers
+ * Node only). Sem env vars, retorna null e o quiz segue funcionando
+ * (apenas pula a persistência).
+ *
+ * IMPORTANTE: SUPABASE_SERVICE_KEY NUNCA pode ser prefixada com
+ * NEXT_PUBLIC_ — Next.js só expõe envs com esse prefixo pro bundle do
+ * client. Mantendo o nome sem prefixo, fica server-only.
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -12,11 +19,11 @@ export function getSupabase(): SupabaseClient | null {
   if (cached !== undefined) return cached;
 
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_KEY;
 
   if (!url || !key) {
     console.warn(
-      "[supabase] SUPABASE_URL ou SUPABASE_ANON_KEY ausentes — persistência desativada",
+      "[supabase] SUPABASE_URL ou SUPABASE_SERVICE_KEY ausentes — persistência desativada",
     );
     cached = null;
     return cached;
