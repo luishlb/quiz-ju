@@ -215,21 +215,34 @@ Você DEVE produzir 4 campos:
 
 1) "titulo": rótulo MAIÚSCULO de 2 a 4 palavras, ÚNICO pra essa pessoa.
    NÃO usar "AMIGA/AMIGO DE VERDADE", "BFF NOTA 10" ou outros clichês.
-   Tem que ser específico, debochado, condizente com a faixa do score.
-   Use a tabela abaixo como guia (nunca repita os exemplos):
+   Tem que ser específico, debochado, condizente com a FAIXA PERCENTUAL
+   de acertos (você recebe % e total no input). Use a tabela abaixo como
+   guia — siga o tom da faixa, NÃO repita os exemplos literalmente:
 
-   - Score 0-2:   gabaritou ao contrário. Tom: escárnio gentil.
-                  Ex: "INTRUSO NA FESTA" / "QUEM CONVIDOU?" / "ZERO BALA"
-   - Score 3-7:   errou demais. Tom: provocação direta.
-                  Ex: "PARÇA DE OUVIDO" / "SUMIU ANOS 2010" / "AMIGO DE LISTA"
-   - Score 8-13:  metade-metade. Tom: deboche amigável.
-                  Ex: "MEIA-BOCA OFICIAL" / "BEST DE BIRTHDAY" / "ALGUMA INTIMIDADE"
-   - Score 14-18: foi bem. Tom: elogio com pegadinha.
+   ★ FAIXAS DE DESEMPENHO (em PERCENTUAL — sempre calibre por aqui) ★
+
+   - 0% a 20%   → RIDICULAMENTE RUIM. Escárnio sem dó. Não conhece nada.
+                  Tom: "intruso", "tem certeza que é amigo dela mesmo?"
+                  Ex: "ZERO BALA" / "QUEM CONVIDOU?" / "INTRUSO NA FESTA"
+
+   - 21% a 50%  → RUIM. Provocação direta. Conhece de longe.
+                  Tom: "amigo de aniversário só", "sumiu há anos"
+                  Ex: "PARÇA DE LISTA" / "SUMIDO DESDE 2015" / "MEIA AMIZADE"
+
+   - 51% a 70%  → MAIS OU MENOS. Deboche amigável, mediano.
+                  Tom: "razoável", "tem o básico mas falha no detalhe"
+                  Ex: "QUASE LÁ" / "AMIZADE DE BAIRRO" / "INTIMIDADE PARCIAL"
+
+   - 71% a 90%  → BOM. Elogio com leve pegadinha.
+                  Tom: "vai bem, é amigo de fato"
                   Ex: "GUARDA-COSTAS DA JU" / "CÚMPLICE DE FOFOCA" / "QUASE BFF"
-   - Score 19-22: gabaritou. Tom: elogio com hipérbole / suspeita.
-                  Ex: "STALKER OFICIAL" / "ARQUIVO VIVO" / "DEMERIT GÊMEA"
+
+   - 91% a 100% → ALMA GÊMEA. Elogio com hipérbole / suspeita.
+                  Tom: "assustador de tanto que sabe", "stalker amigável"
+                  Ex: "STALKER OFICIAL" / "ARQUIVO VIVO DA JU" / "ALMA GÊMEA"
 
    IMPORTANTE: cria um título NOVO. Não use os exemplos acima literalmente.
+   E SIGA A FAIXA — 64% é "MAIS OU MENOS", NÃO É BOM. Não infle elogio.
 
 2) "subtitulo": uma frase em LOWERCASE, italic-feel, debochada,
    máximo 8 palavras. Ex: "vc decora o cardápio dela há 20 anos",
@@ -303,11 +316,20 @@ export async function gerarAvaliacao(
 ): Promise<AvaliacaoIA> {
   const ai = getClient();
 
+  const pct = Math.round((input.score / input.total) * 100);
+  const faixa =
+    pct <= 20 ? "0–20% (RIDICULAMENTE RUIM — escárnio)"
+    : pct <= 50 ? "21–50% (RUIM — provocação)"
+    : pct <= 70 ? "51–70% (MAIS OU MENOS — deboche mediano)"
+    : pct <= 90 ? "71–90% (BOM — elogio com pegadinha)"
+    : "91–100% (ALMA GÊMEA — elogio com hipérbole)";
+
   const userPrompt = `
 DADOS DESSA PESSOA:
 - Nome: ${input.nome}
-- Pontuação: ${input.score} de ${input.total}
-- Tier: "${input.tier}"
+- Pontuação: ${input.score} de ${input.total} (${pct}%)
+- FAIXA DE DESEMPENHO: ${faixa}  ← calibrar tom EXATAMENTE por essa faixa
+- Tier interno: "${input.tier}"
 - Palavra que define a Ju: ${input.palavraUnica ?? "(não respondeu)"}
 - "A Ju pra mim é...": ${input.fraseCompletar ?? "(não respondeu)"}
 - Música que define a Ju: ${input.musicaJu ?? "(não respondeu)"}

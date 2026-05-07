@@ -1,13 +1,14 @@
 /**
  * Gabarito completo do quiz "Você é amiga(o) de verdade da Ju?"
  *
- * - Perguntas 1-22 pontuam (1 ponto cada). Tipos:
- *     - "multiple": opções fixas, 1 correta
- *     - "short": resposta curta, validação flexível por aliases ou keywords
- * - Perguntas 23-26 são abertas (não pontuam, alimentam o mural).
+ * Ordem do array reflete a ordem que as perguntas aparecem no quiz:
+ *   1. Múltipla escolha (15) — clicar pra avançar
+ *   2. Resposta livre digitada (10) — exige memória + digitação
+ *   3. Seção revista (4) — abertas, não pontuam, alimentam o mural
  *
- * IMPORTANTE: pergunta 22 está marcada como `tentative: true` —
- * resposta provável mas pode ser alterada via admin (pedido do Luis).
+ * IMPORTANTE: q22 marcada como `tentative: true` (gabarito a confirmar).
+ * IMPORTANTE: q27 (drone) e q28 (lua de mel) DEVEM ficar adjacentes —
+ *   q28 referencia "essa mesma viagem" do q27.
  */
 
 export type QuestionId =
@@ -20,7 +21,7 @@ export type QuestionId =
 
 type BaseQuestion = {
   id: QuestionId;
-  section: 1 | 2 | 3 | 4 | 5;
+  section: 1 | 2 | 3;
   prompt: string;
 };
 
@@ -54,7 +55,10 @@ export type OpenLong = BaseQuestion & {
 export type Question = MultipleChoice | ShortAnswer | OpenShort | OpenLong;
 
 export const QUESTIONS: Question[] = [
-  // ── Seção 1 — O básico
+  // ══════════════════════════════════════════════════════════
+  //  Seção 1 — MÚLTIPLA ESCOLHA (15)
+  // ══════════════════════════════════════════════════════════
+
   {
     id: "q01", section: 1, type: "multiple", scores: true,
     prompt: "Qual a altura da Ju?",
@@ -85,52 +89,25 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
   {
-    id: "q05", section: 1, type: "short", scores: true,
-    prompt: "Qual o nome do primeiro cachorro dela?",
-    aliases: ["sultao", "sultão", "sultan"],
-  },
-
-  // ── Seção 2 — Coração
-  {
-    id: "q07", section: 2, type: "short", scores: true,
-    prompt: "Quem foi o primeiro namorado da Ju?",
-    aliases: ["gustavo", "guga"],
-  },
-  {
-    id: "q08", section: 2, type: "multiple", scores: true,
+    id: "q08", section: 1, type: "multiple", scores: true,
     prompt: "Quantos vestibulares a Ju fez até passar?",
     options: ["1", "2", "3", "4"],
     correctIndex: 2,
   },
   {
-    id: "q09", section: 2, type: "multiple", scores: true,
+    id: "q09", section: 1, type: "multiple", scores: true,
     prompt: "Em que ano ela se formou na faculdade?",
     options: ["2011", "2012", "2013", "2014", "2015"],
     correctIndex: 2,
   },
   {
-    id: "q10", section: 2, type: "short", scores: true,
-    prompt: "Onde ela conheceu o Breno?",
-    aliases: [
-      "atual", "colegio atual", "colégio atual", "no atual",
-      "no colegio atual", "no colégio atual", "atual mesmo",
-    ],
-  },
-  {
-    id: "q11", section: 2, type: "multiple", scores: true,
+    id: "q11", section: 1, type: "multiple", scores: true,
     prompt: "Em que ano ela conheceu o Breno?",
     options: ["2002", "2003", "2004", "2005", "2006"],
     correctIndex: 2,
   },
-
-  // ── Seção 3 — Gostos
   {
-    id: "q12", section: 3, type: "short", scores: true,
-    prompt: "Qual a comida favorita da Ju?",
-    aliases: ["chocolate"],
-  },
-  {
-    id: "q13", section: 3, type: "multiple", scores: true,
+    id: "q13", section: 1, type: "multiple", scores: true,
     prompt: "Qual a banda que ela mais ouvia na adolescência?",
     options: [
       "Backstreet Boys",
@@ -142,7 +119,7 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
   {
-    id: "q14", section: 3, type: "multiple", scores: true,
+    id: "q14", section: 1, type: "multiple", scores: true,
     prompt: "Qual a música que ela surta quando escuta (preferida da adolescência)?",
     options: [
       "I Want It That Way — Backstreet Boys",
@@ -154,7 +131,7 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
   {
-    id: "q15", section: 3, type: "multiple", scores: true,
+    id: "q15", section: 1, type: "multiple", scores: true,
     prompt: "Qual a série que a Ju assistiu mais vezes na vida?",
     options: [
       "Friends",
@@ -166,7 +143,7 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
   {
-    id: "q16", section: 3, type: "multiple", scores: true,
+    id: "q16", section: 1, type: "multiple", scores: true,
     prompt: "Qual a maior mania/cacoete da Ju?",
     options: [
       "Roer unha sem parar",
@@ -178,31 +155,19 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
   {
-    id: "q17", section: 3, type: "multiple", scores: true,
+    id: "q17", section: 1, type: "multiple", scores: true,
     prompt: "Qual a maior fobia dela?",
     options: ["Baratas", "Aranhas", "Altura", "Palhaço", "Lugar fechado"],
     correctIndex: 0,
   },
   {
-    id: "q18", section: 3, type: "short", scores: true,
-    prompt: "Qual era o nick dela no mIRC?",
-    aliases: ["flor_de_liz", "flor de liz", "flordeliz", "flor-de-liz"],
-  },
-
-  // ── Seção 4 — Memórias
-  {
-    id: "q19", section: 4, type: "multiple", scores: true,
+    id: "q19", section: 1, type: "multiple", scores: true,
     prompt: "Qual a viagem mais marcante que a Ju já fez?",
     options: ["Chile", "Argentina", "Europa", "Estados Unidos", "Disney"],
     correctIndex: 0,
   },
   {
-    id: "q20", section: 4, type: "short", scores: true,
-    prompt: "Qual a festa mais marcante que a Ju já promoveu?",
-    keywords: ["caveira", "aniversario do luis", "aniversário do luis", "luis 2018", "festa do luis"],
-  },
-  {
-    id: "q21", section: 4, type: "multiple", scores: true,
+    id: "q21", section: 1, type: "multiple", scores: true,
     prompt: "Qual foi o primeiro porre que a Ju tomou?",
     options: [
       "Copa 2002 — é pentaaaa",
@@ -214,7 +179,7 @@ export const QUESTIONS: Question[] = [
     correctIndex: 4,
   },
   {
-    id: "q22", section: 4, type: "multiple", scores: true,
+    id: "q22", section: 1, type: "multiple", scores: true,
     tentative: true, // confirmar gabarito depois (Luis quer flexibilidade)
     prompt: "Onde a Ju quebrou o pé e precisou de cirurgia?",
     options: [
@@ -226,8 +191,47 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 0,
   },
+
+  // ══════════════════════════════════════════════════════════
+  //  Seção 2 — RESPOSTA LIVRE DIGITADA (10)
+  //  q27 e q28 ficam adjacentes (q28 referencia q27).
+  // ══════════════════════════════════════════════════════════
+
   {
-    id: "q27", section: 4, type: "short", scores: true,
+    id: "q05", section: 2, type: "short", scores: true,
+    prompt: "Qual o nome do primeiro cachorro dela?",
+    aliases: ["sultao", "sultão", "sultan"],
+  },
+  {
+    id: "q07", section: 2, type: "short", scores: true,
+    prompt: "Quem foi o primeiro namorado da Ju?",
+    aliases: ["gustavo", "guga"],
+  },
+  {
+    id: "q10", section: 2, type: "short", scores: true,
+    prompt: "Onde ela conheceu o Breno?",
+    aliases: [
+      "atual", "colegio atual", "colégio atual", "no atual",
+      "no colegio atual", "no colégio atual", "atual mesmo",
+    ],
+  },
+  {
+    id: "q12", section: 2, type: "short", scores: true,
+    prompt: "Qual a comida favorita da Ju?",
+    aliases: ["chocolate"],
+  },
+  {
+    id: "q18", section: 2, type: "short", scores: true,
+    prompt: "Qual era o nick dela no mIRC?",
+    aliases: ["flor_de_liz", "flor de liz", "flordeliz", "flor-de-liz"],
+  },
+  {
+    id: "q20", section: 2, type: "short", scores: true,
+    prompt: "Qual a festa mais marcante que a Ju já promoveu?",
+    keywords: ["caveira", "aniversario do luis", "aniversário do luis", "luis 2018", "festa do luis"],
+  },
+  {
+    id: "q27", section: 2, type: "short", scores: true,
     prompt: "Onde a Ju se acidentou tentando pegar um drone numa lancha e precisou ir pra UPA?",
     aliases: [
       "boipeba", "ilha de boipeba",
@@ -238,7 +242,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "q28", section: 4, type: "short", scores: true,
+    id: "q28", section: 2, type: "short", scores: true,
     prompt: "Nessa mesma viagem, ela foi invadir a lua de mel de qual casal recém-casado?",
     aliases: [
       "diego e camila", "diego/camila", "camila e diego",
@@ -246,7 +250,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "q29", section: 4, type: "short", scores: true,
+    id: "q29", section: 2, type: "short", scores: true,
     prompt: "Pra qual casal a Ju organizou junto com outros amigos um casamento surpresa?",
     aliases: [
       "luis e camila", "luís e camila", "luis/camila", "camila e luis",
@@ -254,7 +258,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "q30", section: 4, type: "short", scores: true,
+    id: "q30", section: 2, type: "short", scores: true,
     prompt: "Onde a Ju estava quando foi expulsa de uma ambulancha?",
     aliases: [
       // qualquer menção a Pará ou Cotijuba conta
@@ -269,32 +273,33 @@ export const QUESTIONS: Question[] = [
     keywords: ["para", "pará", "cotijuba", "belem", "belém"],
   },
 
-  // ── Seção 5 — Revista (não pontuam)
+  // ══════════════════════════════════════════════════════════
+  //  Seção 3 — REVISTA (4) — não pontuam, vão pro mural
+  // ══════════════════════════════════════════════════════════
+
   {
-    id: "q23", section: 5, type: "open-short", scores: false,
+    id: "q23", section: 3, type: "open-short", scores: false,
     prompt: "Defina a Ju em UMA palavra:",
   },
   {
-    id: "q24", section: 5, type: "open-long", scores: false,
+    id: "q24", section: 3, type: "open-long", scores: false,
     prompt: "Complete a frase: \"A Ju pra mim é...\"",
   },
   {
-    id: "q25", section: 5, type: "open-short", scores: false,
+    id: "q25", section: 3, type: "open-short", scores: false,
     prompt: "Se a Ju fosse uma música, qual seria?",
   },
   {
-    id: "q26", section: 5, type: "open-long", scores: false,
+    id: "q26", section: 3, type: "open-long", scores: false,
     prompt: "Mande um recado pra Ju nesses 40 anos 💌",
   },
 ];
 
 export const SCORING_QUESTIONS = QUESTIONS.filter((q) => q.scores);
-export const TOTAL_SCORING = SCORING_QUESTIONS.length; // 22
+export const TOTAL_SCORING = SCORING_QUESTIONS.length; // 25
 
-export const SECTION_TITLES: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "📚 O básico que todo mundo deveria saber",
-  2: "💘 Secretos do coração (SQN)",
-  3: "🎵 Gostos e manias",
-  4: "🎉 Memórias que só amigo de verdade sabe",
-  5: "✨ Seção revista",
+export const SECTION_TITLES: Record<1 | 2 | 3, string> = {
+  1: "📚 Múltipla escolha",
+  2: "✍️ Resposta livre — agora é memória pura",
+  3: "💌 Seção revista — pra Ju ler na festa",
 };

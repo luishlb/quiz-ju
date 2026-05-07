@@ -5,7 +5,7 @@ import { SECTION_TITLES } from "@/data/questions";
 type Props = {
   current: number; // índice 0-based
   total: number;
-  section: 1 | 2 | 3 | 4 | 5;
+  section: 1 | 2 | 3;
 };
 
 export function ProgressBar({ current, total, section }: Props) {

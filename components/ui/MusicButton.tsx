@@ -15,14 +15,15 @@ import { useEffect, useRef, useState } from "react";
  * O ID é o que vem depois de `v=` na URL do YouTube.
  */
 const SONG_POOL: ReadonlyArray<{ id: string; title: string }> = [
-  { id: "RsZS-JmzEUw", title: "Erasure - A Little Respect" },
+  // IDs validados via oembed do YouTube em 2026-05-06
+  { id: "x34icYC8zA0", title: "Erasure - A Little Respect" },
   { id: "4fndeDfaWCg", title: "Backstreet Boys - I Want It That Way" },
   { id: "Eo-KmOd3i7s", title: "*NSYNC - Bye Bye Bye" },
-  { id: "V_2yPZRTjOM", title: "The Calling - Wherever You Will Go" },
+  { id: "iAP9AF6DCu4", title: "The Calling - Wherever You Will Go" },
   { id: "NHozn0YXAeE", title: "Hanson - MMMBop" },
   { id: "9Ht5RZpzPqw", title: "Blink 182 - All The Small Things" },
-  { id: "bce4nT684wA", title: "Offspring - Pretty Fly (For a White Guy)" },
-  { id: "MPDjwldKwIY", title: "Legião Urbana - Tempo Perdido" },
+  { id: "QtTR-_Klcq8", title: "Offspring - Pretty Fly (For a White Guy)" },
+  { id: "tI9kSZgMLsc", title: "Legião Urbana - Tempo Perdido (Ao Vivo)" },
 ];
 
 declare global {
