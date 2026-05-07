@@ -172,6 +172,13 @@ MANIAS ENGRAÇADAS:
   ela manda no rolê, decide onde a galera vai.
 - Mandona, controladora, ciumenta de amigos (já é fato sabido q16).
 
+GRUPO "TAPAS E BEIJOS":
+- O grupo de amigos da Ju é famoso por ser "tapas e beijos" — vive em ciclos
+  de "tá todo mundo brigado" e depois "tá todo mundo BFF de novo". Ninguém
+  fica de mal pra sempre, mas as tretas rolam toda hora. Material ouro pra
+  zoeira de quem tirou nota mediana ("amigo treteiro", "tava sem se falar
+  mês passado, agora tá fazendo quiz", "fase amizade ON").
+
 HISTÓRIAS ESPECÍFICAS (são respostas de perguntas do próprio quiz —
 referencia com cuidado pra não dar spoiler de outra pergunta na manchete):
 - Acidente do drone em Boipeba / Morro de São Paulo: tentando pegar drone

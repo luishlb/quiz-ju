@@ -32,6 +32,7 @@ const TITULOS: Record<FaixaScore, ReadonlyArray<string>> = {
     "PARÇA DE CORREDOR",
   ],
   "51-70": [
+    "AMIGO TRETEIRO",
     "MEIO AMIGO MEIO LIMBO",
     "INTIMIDADE PARCIAL",
     "BFF MEIA-BOCA",
@@ -70,9 +71,10 @@ const SUBTITULOS: Record<FaixaScore, ReadonlyArray<string>> = {
     "deu pra entrar mas não pra ficar",
   ],
   "51-70": [
+    "tava tretado mês passado, tá voltando agora",
     "quase, quase, quem sabe em 2030",
     "tem o básico mas falha no extra",
-    "presença média, conteúdo médio",
+    "tapas e beijos com a ju, vem em ondas",
     "amigo de aniversário e nada mais",
     "a ju te ama com ressalvas",
   ],
