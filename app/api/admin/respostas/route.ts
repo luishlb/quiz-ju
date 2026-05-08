@@ -1,59 +1,37 @@
 /**
- * GET /api/admin/respostas
- * Retorna todas as respostas ordenadas por pontuação desc, tempo asc.
- * Protegido por cookie de admin.
+ * GET /api/admin/respostas — lista respostas (auth obrigatória).
+ * DELETE /api/admin/respostas?confirm=1 — apaga TODAS (proteção via query).
  */
 
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getSupabase } from "@/lib/supabase";
+import {
+  apagarTodasRespostas,
+  listarRespostas,
+  type RespostaRow,
+} from "@/lib/db";
 
 export const runtime = "nodejs";
 
-export type RespostaRow = {
-  id: string;
-  created_at: string;
-  nome: string;
-  pontuacao: number;
-  total: number;
-  titulo: string | null;
-  subtitulo: string | null;
-  manchete: string | null;
-  manchete_post: string | null;
-  respostas: Record<string, string> | null;
-  tempo_segundos: number | null;
-  user_agent: string | null;
-};
+export type { RespostaRow };
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "não autorizado" }, { status: 401 });
   }
-
-  const sb = getSupabase();
-  if (!sb) {
+  try {
+    const rows = await listarRespostas();
+    return NextResponse.json({ rows });
+  } catch (err) {
+    console.error("[admin/respostas] GET falhou:", err);
     return NextResponse.json(
-      { error: "Supabase não configurado" },
+      { error: err instanceof Error ? err.message : "erro inesperado" },
       { status: 500 },
     );
   }
-
-  const { data, error } = await sb
-    .from("respostas_ju")
-    .select("*")
-    .order("pontuacao", { ascending: false })
-    .order("tempo_segundos", { ascending: true, nullsFirst: false })
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ rows: data as RespostaRow[] });
 }
 
-/** DELETE /api/admin/respostas — apaga TODAS as tentativas (limpar tabela).
- *  Tem que passar `?confirm=1` na query string pra evitar acidentes. */
+/** DELETE — apaga TODAS as tentativas. Tem que passar `?confirm=1`. */
 export async function DELETE(request: Request) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "não autorizado" }, { status: 401 });
@@ -65,21 +43,14 @@ export async function DELETE(request: Request) {
       { status: 400 },
     );
   }
-  const sb = getSupabase();
-  if (!sb) {
+  try {
+    const deleted = await apagarTodasRespostas();
+    return NextResponse.json({ ok: true, deleted });
+  } catch (err) {
+    console.error("[admin/respostas] DELETE falhou:", err);
     return NextResponse.json(
-      { error: "Supabase não configurado" },
+      { error: err instanceof Error ? err.message : "erro inesperado" },
       { status: 500 },
     );
   }
-  // Supabase exige um filtro no DELETE. Filtro que sempre bate:
-  // created_at >= epoch zero.
-  const { error } = await sb
-    .from("respostas_ju")
-    .delete()
-    .gte("created_at", "1970-01-01");
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  return NextResponse.json({ ok: true });
 }

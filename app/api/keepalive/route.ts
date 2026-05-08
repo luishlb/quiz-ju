@@ -1,44 +1,32 @@
 /**
  * GET /api/keepalive
  *
- * Roda 1× por semana via Vercel Cron (vercel.json) pra evitar que o
- * Supabase free tier pause o projeto por inatividade (~7 dias sem
- * requests = pausa). Faz uma query trivial pra "tocar" o DB.
- *
- * Festa é em abril/2027 — esse projeto vai ficar idle ~1 ano. Sem o
- * keepalive, o DB pausa toda semana e a gente perde tempo reativando
- * manualmente toda vez que alguém testar.
+ * Originalmente criado pra evitar que o Supabase pause por inatividade.
+ * Migramos pra Neon (que não pausa), mas o cron continua existindo como
+ * health check + redundância. Custo: 1 query trivial por semana.
  */
 
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { pingDb } from "@/lib/db";
 
 export const runtime = "nodejs";
-// Não cachear — sempre executa o ping
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const sb = getSupabase();
-  if (!sb) {
+  try {
+    const result = await pingDb();
+    return NextResponse.json({
+      ok: result.ok,
+      rowCount: result.count,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
     return NextResponse.json(
-      { ok: false, reason: "supabase não configurado" },
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : "erro inesperado",
+      },
       { status: 500 },
     );
   }
-  // SELECT trivial — só conta linhas, não retorna dados
-  const { count, error } = await sb
-    .from("respostas_ju")
-    .select("*", { count: "exact", head: true });
-
-  if (error) {
-    return NextResponse.json(
-      { ok: false, error: error.message },
-      { status: 500 },
-    );
-  }
-  return NextResponse.json({
-    ok: true,
-    rowCount: count ?? 0,
-    timestamp: new Date().toISOString(),
-  });
 }

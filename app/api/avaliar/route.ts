@@ -16,9 +16,9 @@ import {
   type ErroParaComentar,
   type ShortValidationItem,
 } from "@/lib/gemini";
+import { registrarResultado } from "@/lib/db";
 import { matchesAny, matchesKeyword } from "@/lib/normalize";
 import type { AnswersMap } from "@/lib/scoring";
-import { registrarResultado } from "@/lib/supabase";
 import { tierForScore } from "@/lib/titles";
 import { pickTituloSubtitulo } from "@/lib/titulos";
 

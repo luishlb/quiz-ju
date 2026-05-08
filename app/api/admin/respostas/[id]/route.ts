@@ -5,7 +5,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getSupabase } from "@/lib/supabase";
+import { apagarResposta } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -20,16 +20,14 @@ export async function DELETE(
   if (!id) {
     return NextResponse.json({ error: "id ausente" }, { status: 400 });
   }
-  const sb = getSupabase();
-  if (!sb) {
+  try {
+    const deleted = await apagarResposta(id);
+    return NextResponse.json({ ok: true, deleted });
+  } catch (err) {
+    console.error("[admin/respostas/id] DELETE falhou:", err);
     return NextResponse.json(
-      { error: "Supabase não configurado" },
+      { error: err instanceof Error ? err.message : "erro inesperado" },
       { status: 500 },
     );
   }
-  const { error } = await sb.from("respostas_ju").delete().eq("id", id);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  return NextResponse.json({ ok: true });
 }
