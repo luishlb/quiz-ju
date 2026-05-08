@@ -181,7 +181,6 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q22", section: 1, type: "multiple", scores: true,
-    tentative: true, // confirmar gabarito depois (Luis quer flexibilidade)
     prompt: "Onde a Ju quebrou o pé e precisou de cirurgia?",
     options: [
       "De patins, na praça",
@@ -190,7 +189,7 @@ export const QUESTIONS: Question[] = [
       "Dançando forró no São João da Capital",
       "De salto alto, no Alive",
     ],
-    correctIndex: 0,
+    correctIndex: 2,
   },
 
   // ══════════════════════════════════════════════════════════
