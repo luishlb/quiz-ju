@@ -145,7 +145,7 @@ export function MuralCarousel() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 1.03, y: -20 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
-          className="absolute inset-0 flex items-center justify-center px-20 pt-44 pb-20"
+          className="absolute inset-0 flex items-center justify-center px-16 pt-28 pb-16"
         >
           {slide.kind === "ranking" ? (
             <RankingSlide rows={slide.rows} />
@@ -179,33 +179,35 @@ function CapricoFrame({ children }: { children: React.ReactNode }) {
       {/* Stickers fixos nos cantos */}
       <Stickers />
 
-      {/* Header gigante estilo capa Capricho */}
-      <header className="absolute top-0 left-0 right-0 px-12 pt-6 z-20 flex items-start justify-between gap-8">
-        <div className="flex flex-col items-start gap-2">
+      {/* Header capa Capricho — compacto pra não invadir o slide */}
+      <header className="absolute top-0 left-0 right-0 px-10 pt-5 z-20 flex items-start justify-between gap-6">
+        <div className="flex items-center gap-4">
           <h1
             className="font-bubble text-rosa-choque leading-none"
             style={{
-              fontSize: "clamp(64px, 7vw, 112px)",
+              fontSize: "clamp(40px, 4.5vw, 72px)",
               textShadow:
-                "4px 4px 0 #fff, 8px 8px 0 rgba(199,125,255,0.7)",
-              letterSpacing: 2,
+                "3px 3px 0 #fff, 6px 6px 0 rgba(199,125,255,0.7)",
+              letterSpacing: 1.5,
             }}
           >
             JU FAZ 40
           </h1>
-          <div className="bg-rosa-choque text-white px-4 py-1.5 rounded-full font-display uppercase tracking-widest text-sm shadow-[3px_3px_0_rgba(0,0,0,0.25)]">
-            ✨ teste oficial Capricho ✨
-          </div>
-          <div className="bg-amarelo-glitter text-preto-revista px-3 py-0.5 rounded-full font-display uppercase tracking-wider text-xs shadow-[2px_2px_0_rgba(0,0,0,0.2)] -mt-1">
-            edição especial · 40 anos
+          <div className="flex flex-col gap-1">
+            <div className="bg-rosa-choque text-white px-3 py-1 rounded-full font-display uppercase tracking-widest text-[11px] shadow-[2px_2px_0_rgba(0,0,0,0.25)] whitespace-nowrap">
+              ✨ teste oficial Capricho ✨
+            </div>
+            <div className="bg-amarelo-glitter text-preto-revista px-2.5 py-0.5 rounded-full font-display uppercase tracking-wider text-[10px] shadow-[2px_2px_0_rgba(0,0,0,0.2)] whitespace-nowrap">
+              edição especial · 40 anos
+            </div>
           </div>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm border-4 border-rosa-bubble rounded-2xl px-5 py-3 text-right shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
-          <p className="font-bubble text-rosa-choque text-2xl leading-none">
+        <div className="bg-white/90 backdrop-blur-sm border-[3px] border-rosa-bubble rounded-xl px-4 py-2 text-right shadow-[3px_3px_0_rgba(0,0,0,0.2)]">
+          <p className="font-bubble text-rosa-choque text-lg leading-none">
             24 . 04 . 2027
           </p>
-          <p className="font-display text-preto-revista text-xs uppercase tracking-widest mt-1">
+          <p className="font-display text-preto-revista text-[10px] uppercase tracking-widest mt-0.5">
             ilha do retiro · recife
           </p>
         </div>
@@ -214,9 +216,9 @@ function CapricoFrame({ children }: { children: React.ReactNode }) {
       {/* Conteúdo do slide */}
       {children}
 
-      {/* Mascote Ju "comemorando" no canto inferior esquerdo */}
-      <div className="absolute bottom-12 left-12 z-20 pointer-events-none">
-        <JuMascot mood="feliz" size="lg" />
+      {/* Mascote Ju "comemorando" no canto inferior esquerdo, discreta pra não invadir o slide */}
+      <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
+        <JuMascot mood="feliz" size="md" />
       </div>
 
       {/* Footer barrinha com URL */}
@@ -229,25 +231,25 @@ function CapricoFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Stickers nos cantos — emojis grandes rotacionados, dão look de revista.
- *  Bottom-left livre pra mascote da Ju aparecer lá. */
+/** Stickers laterais — só nas bordas, NÃO no caminho do slide.
+ *  Bottom-left livre pra mascote, top livre pro header. */
 function Stickers() {
   return (
     <>
-      <span className="absolute top-32 right-12 text-7xl rotate-[18deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
-        💖
-      </span>
-      <span className="absolute top-1/2 left-6 text-5xl rotate-[8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none -translate-y-1/2">
+      <span className="absolute top-1/3 left-3 text-5xl rotate-[8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
         ⭐
       </span>
-      <span className="absolute top-1/2 right-6 text-5xl rotate-[-8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none -translate-y-1/2">
+      <span className="absolute top-1/3 right-3 text-5xl rotate-[-12deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+        💖
+      </span>
+      <span className="absolute top-2/3 left-3 text-4xl rotate-[-8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+        🎀
+      </span>
+      <span className="absolute top-2/3 right-3 text-5xl rotate-[8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
         💎
       </span>
-      <span className="absolute bottom-16 right-12 text-6xl rotate-[15deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+      <span className="absolute bottom-12 right-12 text-5xl rotate-[15deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
         ✨
-      </span>
-      <span className="absolute top-44 left-1/2 text-5xl rotate-[-22deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
-        🎀
       </span>
     </>
   );
@@ -304,18 +306,16 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
     <div className="w-full max-w-[1200px] flex flex-col items-center gap-5">
       <div className="text-center">
         <h2
-          className="font-bubble text-white leading-tight uppercase"
+          className="font-bubble text-white leading-none uppercase"
           style={{
-            fontSize: "clamp(40px, 4.5vw, 72px)",
-            textShadow: "4px 4px 0 #FF1493, 8px 8px 0 rgba(0,0,0,0.2)",
+            fontSize: "clamp(28px, 3.6vw, 56px)",
+            textShadow: "3px 3px 0 #FF1493, 6px 6px 0 rgba(0,0,0,0.2)",
             letterSpacing: 1,
           }}
         >
-          Ranking dos Melhores
-          <br />
-          Amigos da Ju
+          Ranking dos Melhores Amigos da Ju
         </h2>
-        <p className="font-display italic text-white/90 text-lg mt-2 tracking-wider">
+        <p className="font-display italic text-white/90 text-base mt-2 tracking-wider">
           (depois do Luis, claro 👑)
         </p>
       </div>
@@ -382,10 +382,10 @@ function RecadoSlide({ row }: { row: RecadoRow }) {
   return (
     <div className="w-full max-w-[1100px] flex flex-col items-center gap-5">
       <h2
-        className="font-bubble text-white uppercase tracking-wide"
+        className="font-bubble text-white uppercase tracking-wide leading-none"
         style={{
-          fontSize: "clamp(36px, 4vw, 64px)",
-          textShadow: "4px 4px 0 #FF1493, 8px 8px 0 rgba(0,0,0,0.2)",
+          fontSize: "clamp(28px, 3.4vw, 52px)",
+          textShadow: "3px 3px 0 #FF1493, 6px 6px 0 rgba(0,0,0,0.2)",
         }}
       >
         💌 Recado pra Ju
