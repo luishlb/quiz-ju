@@ -155,6 +155,8 @@ export async function POST(request: NextRequest) {
 
   let manchete = "";
   let manchetePost = "";
+  let moderacaoStatus: "ok" | "bloqueado" | "revisar" = "ok";
+  let moderacaoMotivo: string | null = null;
   try {
     const avaliacao = await gerarAvaliacao(
       {
@@ -171,6 +173,8 @@ export async function POST(request: NextRequest) {
     );
     manchete = avaliacao.manchete;
     manchetePost = avaliacao.manchetePost;
+    moderacaoStatus = avaliacao.moderacao.status;
+    moderacaoMotivo = avaliacao.moderacao.motivo ?? null;
 
     // Anexa cada comentário ao erro correspondente
     for (const c of avaliacao.comentarios) {
@@ -183,7 +187,7 @@ export async function POST(request: NextRequest) {
     manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${titulo}!`;
   }
 
-  // 4. Persiste tudo no Supabase (silencioso — falha de DB não quebra a resposta).
+  // 4. Persiste tudo no Postgres (silencioso — falha de DB não quebra a resposta).
   // Cada chamada do /resultado vira UMA linha — refazer = nova entrada com timestamp.
   // PULA quando skipPersist=true (modo teste via ?test=1 na URL).
   if (!skipPersist) {
@@ -199,6 +203,8 @@ export async function POST(request: NextRequest) {
       respostas: respostas as Record<string, string>,
       tempo_segundos: typeof tempoSegundos === "number" ? tempoSegundos : null,
       user_agent: userAgent,
+      moderacao_status: moderacaoStatus,
+      moderacao_motivo: moderacaoMotivo,
     });
   }
 

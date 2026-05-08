@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -65,7 +66,11 @@ function shuffle<T>(arr: ReadonlyArray<T>): T[] {
   return out;
 }
 
+/** Rotas onde o player não deve renderizar (ex: mural projetado na TV). */
+const HIDDEN_ROUTES = ["/mural"];
+
 export function MusicButton() {
+  const pathname = usePathname();
   const [muted, setMuted] = useState(true);
   const [ready, setReady] = useState(false);
   const [songIdx, setSongIdx] = useState(0);
@@ -160,6 +165,9 @@ export function MusicButton() {
   const queue = queueRef.current;
   const currentTitle = queue[songIdx]?.title ?? "...";
   const hasMultiple = SONG_POOL.length > 1;
+
+  // Não renderiza nada em rotas explicitamente excluídas (ex: /mural na TV)
+  if (HIDDEN_ROUTES.some((p) => pathname?.startsWith(p))) return null;
 
   return (
     <>

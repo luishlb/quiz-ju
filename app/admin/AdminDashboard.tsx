@@ -16,6 +16,9 @@ type Row = {
   respostas: Record<string, string> | null;
   tempo_segundos: number | null;
   user_agent: string | null;
+  oculto: boolean;
+  moderacao_status: "ok" | "bloqueado" | "revisar";
+  moderacao_motivo: string | null;
 };
 
 export function AdminDashboard() {
@@ -61,6 +64,23 @@ export function AdminDashboard() {
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.refresh();
+  };
+
+  const handleToggleOculto = async (id: string, atual: boolean) => {
+    const res = await fetch(`/api/admin/respostas/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oculto: !atual }),
+    });
+    if (!res.ok) {
+      alert("falhou ao alternar visibilidade");
+      return;
+    }
+    setRows((prev) =>
+      prev
+        ? prev.map((r) => (r.id === id ? { ...r, oculto: !atual } : r))
+        : prev,
+    );
   };
 
   const handleDeleteOne = async (id: string, nome: string) => {
@@ -185,14 +205,25 @@ export function AdminDashboard() {
             respostas: null,
             tempo_segundos: null,
             user_agent: null,
+            oculto: false,
+            moderacao_status: "ok",
+            moderacao_motivo: null,
             _placeholder: true,
           },
           ...rows,
         ];
 
-  // q26 = recado pra Ju (pergunta aberta long, vai pro mural)
+  // q26 = recado pra Ju (pergunta aberta long, vai pro mural).
+  // Mantém o `id` pra poder ocultar/mostrar e mostrar status de moderação.
   const recados = rows
-    .map((r) => ({ nome: r.nome, recado: r.respostas?.q26 ?? "" }))
+    .map((r) => ({
+      id: r.id,
+      nome: r.nome,
+      recado: r.respostas?.q26 ?? "",
+      oculto: r.oculto,
+      status: r.moderacao_status,
+      motivo: r.moderacao_motivo,
+    }))
     .filter((r) => r.recado.trim().length > 0);
 
   // q23 e q24 = palavra única e frase pra Ju
@@ -277,22 +308,26 @@ export function AdminDashboard() {
                   <th className="px-2 py-2 text-right">pontos</th>
                   <th className="px-2 py-2 text-right">tempo</th>
                   <th className="px-2 py-2 text-right">quando</th>
-                  <th className="px-2 py-2 text-center w-10">×</th>
+                  <th className="px-2 py-2 text-center w-10" title="status">⚐</th>
+                  <th className="px-2 py-2 text-center w-10" title="ocultar">👁️</th>
+                  <th className="px-2 py-2 text-center w-10" title="apagar">×</th>
                 </tr>
               </thead>
               <tbody>
                 {rankingRows.map((r, i) => {
                   const isLuisRow = i === 0;
+                  const dimmed = !r._placeholder && (r.oculto || r.moderacao_status === "bloqueado");
                   return (
                     <tr
                       key={r.id}
-                      className={
+                      className={[
                         isLuisRow
                           ? "bg-amarelo-glitter/25 border-y-2 border-amarelo-glitter"
                           : i % 2 === 0
                             ? "bg-white"
-                            : "bg-rosa-pastel/10"
-                      }
+                            : "bg-rosa-pastel/10",
+                        dimmed ? "opacity-50" : "",
+                      ].join(" ")}
                     >
                       <td className="px-3 py-2 font-bubble text-rosa-choque text-base">
                         {isLuisRow ? "👑" : i + 1}
@@ -318,6 +353,29 @@ export function AdminDashboard() {
                       </td>
                       <td className="px-2 py-2 text-right font-body text-preto-revista/50 text-[11px]">
                         {r._placeholder ? "—" : formatData(r.created_at)}
+                      </td>
+                      <td className="px-2 py-2 text-center text-base">
+                        {r._placeholder ? (
+                          ""
+                        ) : r.moderacao_status === "bloqueado" ? (
+                          <span title={r.moderacao_motivo ?? "bloqueado pela IA"}>🚫</span>
+                        ) : r.moderacao_status === "revisar" ? (
+                          <span title={r.moderacao_motivo ?? "marcada pra revisar"}>⚠️</span>
+                        ) : (
+                          <span className="opacity-30" title="ok">✓</span>
+                        )}
+                      </td>
+                      <td className="px-2 py-2 text-center">
+                        {!r._placeholder && (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleOculto(r.id, r.oculto)}
+                            className="text-preto-revista/40 hover:text-rosa-choque transition-colors"
+                            title={r.oculto ? "mostrar no mural" : "ocultar do mural"}
+                          >
+                            {r.oculto ? "🙈" : "👁️"}
+                          </button>
+                        )}
                       </td>
                       <td className="px-2 py-2 text-center">
                         {!r._placeholder && (
@@ -348,19 +406,53 @@ export function AdminDashboard() {
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
-            {recados.map((r, i) => (
-              <li
-                key={i}
-                className="bg-white border-2 border-rosa-bubble rounded-xl p-4"
-              >
-                <p className="font-display text-rosa-choque text-xs uppercase tracking-wider mb-1">
-                  {r.nome}
-                </p>
-                <p className="font-body text-preto-revista whitespace-pre-wrap text-sm">
-                  {r.recado}
-                </p>
-              </li>
-            ))}
+            {recados.map((r) => {
+              const dimmed = r.oculto || r.status === "bloqueado";
+              return (
+                <li
+                  key={r.id}
+                  className={`bg-white border-2 ${
+                    r.status === "bloqueado"
+                      ? "border-red-300"
+                      : r.status === "revisar"
+                        ? "border-amarelo-glitter"
+                        : "border-rosa-bubble"
+                  } rounded-xl p-4 ${dimmed ? "opacity-60" : ""}`}
+                >
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <p className="font-display text-rosa-choque text-xs uppercase tracking-wider">
+                      {r.nome}
+                    </p>
+                    <div className="flex items-center gap-2 text-base">
+                      {r.status === "bloqueado" && (
+                        <span title={r.motivo ?? "bloqueado pela IA"}>🚫</span>
+                      )}
+                      {r.status === "revisar" && (
+                        <span title={r.motivo ?? "marcada pra revisar"}>
+                          ⚠️
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleOculto(r.id, r.oculto)}
+                        className="text-preto-revista/40 hover:text-rosa-choque transition-colors"
+                        title={r.oculto ? "mostrar no mural" : "ocultar do mural"}
+                      >
+                        {r.oculto ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                  <p className="font-body text-preto-revista whitespace-pre-wrap text-sm">
+                    {r.recado}
+                  </p>
+                  {r.motivo && (
+                    <p className="font-display text-[11px] text-preto-revista/60 italic mt-2">
+                      IA: {r.motivo}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </Section>

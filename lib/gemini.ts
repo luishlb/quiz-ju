@@ -114,6 +114,12 @@ export type AvaliacaoIA = {
   /** Manchete reescrita em PRIMEIRA pessoa, pra ela postar como se estivesse falando do próprio resultado (image share) */
   manchetePost: string;
   comentarios: Array<{ id: string; comentario: string }>;
+  /** Triagem do recado (q26) que vai pro mural projetado na festa.
+   *  status: ok = pode mostrar / bloqueado = ofensivo, esconder do mural / revisar = duvidoso, admin vê primeiro */
+  moderacao: {
+    status: "ok" | "bloqueado" | "revisar";
+    motivo?: string;
+  };
 };
 
 /**
@@ -273,6 +279,31 @@ subtítulo pra dar a manchete na mesma vibe.
    palavras), revelando a resposta correta de um jeito ENGRAÇADO. Pode falar
    direto com a pessoa ("achou que era...?", "sério mesmo??"). Sem aspas.
 
+4) "moderacao": objeto {status, motivo?} — TRIAGEM AUTOMÁTICA do recado da
+   pessoa (q26 — texto que ela escreveu pra Ju). Esse recado vai aparecer
+   num MURAL PROJETADO NUM TELÃO durante a festa de aniversário, então a
+   moderação é importante. Avalie SÓ o conteúdo do recado (não da manchete
+   nem dos comentários — esses você está gerando, não tem como ser ofensivo).
+
+   - status "ok": recado é apropriado pro telão (mensagem fofa, engraçada,
+     ou neutra). PADRÃO. Vai pro mural.
+   - status "bloqueado": recado contém ataque pessoal real, palavrão como
+     ofensa direta, conteúdo ofensivo, discriminação, ódio, conteúdo sexual
+     explícito ou desconfortável, dox/expor info privada de terceiros. NÃO
+     vai pro mural.
+   - status "revisar": ambíguo, mensagem que tem palavrão de zoeira amigável
+     mas pode ser entendido errado, piadas internas pesadas que aniversariante
+     pode achar ruim. Admin (Luis) vê e decide.
+
+   IMPORTANTE: brincadeiras leves, palavrões em tom de zoeira amigável
+   ("teu cu", "vc é um pênis", "ô caralhita"), referências internas, são
+   "ok" — porque a Ju é íntima da galera e a vibe da festa permite.
+   Bloquear SÓ o que é genuinamente ofensivo, atacante ou desconfortável.
+
+   Se o recado for vazio ou só uma palavra inócua ("parabéns!"), retorna ok.
+
+   Inclua "motivo" curto (1 frase) APENAS quando status != "ok".
+
 EXEMPLOS de tom dos comentários (não copiar literalmente):
 - "Era 1,49m. A Ju é baixinha sim, e se vinga usando salto de 12cm em foto."
 - "Era o COLÉGIO Atual, não academia. Confundir agora vai te render xingo."
@@ -372,21 +403,40 @@ Cada comentário deve usar o mesmo "id" do erro correspondente.
               required: ["id", "comentario"],
             },
           },
+          moderacao: {
+            type: Type.OBJECT,
+            properties: {
+              status: { type: Type.STRING }, // "ok" | "bloqueado" | "revisar"
+              motivo: { type: Type.STRING },
+            },
+            required: ["status"],
+          },
         },
-        required: ["manchete", "manchetePost", "comentarios"],
+        required: ["manchete", "manchetePost", "comentarios", "moderacao"],
       },
     },
   });
 
   const txt = response.text ?? "{}";
   try {
-    const parsed = JSON.parse(txt) as AvaliacaoIA;
+    const parsed = JSON.parse(txt) as Partial<AvaliacaoIA>;
+    const status = parsed.moderacao?.status;
+    const moderacao: AvaliacaoIA["moderacao"] =
+      status === "bloqueado" || status === "revisar"
+        ? { status, motivo: parsed.moderacao?.motivo?.trim() }
+        : { status: "ok" };
     return {
       manchete: parsed.manchete?.trim() ?? "",
       manchetePost: parsed.manchetePost?.trim() ?? "",
       comentarios: Array.isArray(parsed.comentarios) ? parsed.comentarios : [],
+      moderacao,
     };
   } catch {
-    return { manchete: "", manchetePost: "", comentarios: [] };
+    return {
+      manchete: "",
+      manchetePost: "",
+      comentarios: [],
+      moderacao: { status: "ok" },
+    };
   }
 }

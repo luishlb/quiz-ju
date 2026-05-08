@@ -48,6 +48,8 @@ export type RegistroQuiz = {
   respostas: Record<string, string>;
   tempo_segundos: number | null;
   user_agent: string | null;
+  moderacao_status?: "ok" | "bloqueado" | "revisar";
+  moderacao_motivo?: string | null;
 };
 
 /**
@@ -63,11 +65,13 @@ export async function registrarResultado(r: RegistroQuiz): Promise<boolean> {
     await sql`
       INSERT INTO respostas_ju (
         nome, pontuacao, total, titulo, subtitulo,
-        manchete, manchete_post, respostas, tempo_segundos, user_agent
+        manchete, manchete_post, respostas, tempo_segundos, user_agent,
+        moderacao_status, moderacao_motivo
       ) VALUES (
         ${r.nome}, ${r.pontuacao}, ${r.total}, ${r.titulo}, ${r.subtitulo},
         ${r.manchete}, ${r.manchete_post}, ${sql.json(r.respostas)},
-        ${r.tempo_segundos}, ${r.user_agent}
+        ${r.tempo_segundos}, ${r.user_agent},
+        ${r.moderacao_status ?? "ok"}, ${r.moderacao_motivo ?? null}
       )
     `;
     return true;
@@ -90,6 +94,26 @@ export type RespostaRow = {
   respostas: Record<string, string> | null;
   tempo_segundos: number | null;
   user_agent: string | null;
+  oculto: boolean;
+  moderacao_status: "ok" | "bloqueado" | "revisar";
+  moderacao_motivo: string | null;
+};
+
+export type MuralRecadoRow = {
+  id: string;
+  nome: string;
+  recado: string;
+  pontuacao: number;
+  titulo: string | null;
+};
+
+export type MuralRankingRow = {
+  id: string;
+  nome: string;
+  pontuacao: number;
+  total: number;
+  titulo: string | null;
+  tempo_segundos: number | null;
 };
 
 /** Lista todas as respostas ordenadas por pontuação desc, tempo asc, created asc. */
@@ -99,9 +123,52 @@ export async function listarRespostas(): Promise<RespostaRow[]> {
   const rows = await sql<RespostaRow[]>`
     SELECT id::text, created_at, nome, pontuacao, total,
            titulo, subtitulo, manchete, manchete_post,
-           respostas, tempo_segundos, user_agent
+           respostas, tempo_segundos, user_agent,
+           oculto, moderacao_status, moderacao_motivo
     FROM respostas_ju
     ORDER BY pontuacao DESC, tempo_segundos ASC NULLS LAST, created_at ASC
+  `;
+  return rows;
+}
+
+/** Toggle do flag oculto. Se for null, inverte o atual. */
+export async function setOculto(id: string, oculto: boolean): Promise<number> {
+  const sql = getSql();
+  if (!sql) return 0;
+  const res = await sql`
+    UPDATE respostas_ju SET oculto = ${oculto} WHERE id = ${id}
+  `;
+  return res.count;
+}
+
+/** Pra mural — só os recados visíveis (não oculto, moderacao ok),
+ *  com texto não-vazio do q26. */
+export async function listarMuralRecados(): Promise<MuralRecadoRow[]> {
+  const sql = getSql();
+  if (!sql) return [];
+  const rows = await sql<MuralRecadoRow[]>`
+    SELECT id::text, nome, pontuacao, titulo,
+           respostas->>'q26' as recado
+    FROM respostas_ju
+    WHERE oculto = false
+      AND moderacao_status = 'ok'
+      AND respostas ? 'q26'
+      AND length(trim(respostas->>'q26')) > 0
+    ORDER BY created_at DESC
+  `;
+  return rows;
+}
+
+/** Pra mural — top 10 do ranking (Luis pinado fora, no front). */
+export async function listarMuralRanking(limit = 10): Promise<MuralRankingRow[]> {
+  const sql = getSql();
+  if (!sql) return [];
+  const rows = await sql<MuralRankingRow[]>`
+    SELECT id::text, nome, pontuacao, total, titulo, tempo_segundos
+    FROM respostas_ju
+    WHERE oculto = false
+    ORDER BY pontuacao DESC, tempo_segundos ASC NULLS LAST, created_at ASC
+    LIMIT ${limit}
   `;
   return rows;
 }
