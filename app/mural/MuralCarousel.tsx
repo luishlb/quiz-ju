@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { JuMascot } from "@/components/ui/JuMascot";
 
 type RankingRow = {
   id: string;
@@ -26,24 +27,25 @@ type Slide =
   | { kind: "ranking"; rows: RankingRow[] }
   | { kind: "recado"; row: RecadoRow };
 
-const RANKING_DURATION_MS = 10_000;
+const RANKING_DURATION_MS = 12_000;
 const RECADO_DURATION_MS = 12_000;
 const REFRESH_DATA_MS = 30_000;
 
 function isLuis(nome: string): boolean {
-  const n = nome.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+  const n = nome
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
   return n === "luis" || n === "luiz";
 }
 
-/** Pin Luis no #1 (mesmo padrão do admin). */
 function pinLuisFirst(ranking: RankingRow[]): RankingRow[] {
   const luisIdx = ranking.findIndex((r) => isLuis(r.nome));
   if (luisIdx < 0) return ranking;
   return [ranking[luisIdx], ...ranking.filter((_, i) => i !== luisIdx)];
 }
 
-/** Constrói a sequência de slides: ranking primeiro, depois alterna 1 recado
- *  com 1 ranking pra a galera não esquecer da pontuação. */
 function buildSequence(dados: Dados): Slide[] {
   const ranking = pinLuisFirst(dados.ranking);
   const slides: Slide[] = [{ kind: "ranking", rows: ranking }];
@@ -60,7 +62,6 @@ export function MuralCarousel() {
   const [slideIdx, setSlideIdx] = useState(0);
   const refreshTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Fetch inicial + auto-refresh
   useEffect(() => {
     const fetchDados = async () => {
       try {
@@ -86,7 +87,6 @@ export function MuralCarousel() {
     [dados],
   );
 
-  // Avança o slide quando termina
   useEffect(() => {
     if (sequence.length === 0) return;
     const slide = sequence[slideIdx % sequence.length];
@@ -98,7 +98,6 @@ export function MuralCarousel() {
     return () => clearTimeout(t);
   }, [slideIdx, sequence]);
 
-  // Evita slideIdx fora do range quando dados mudam
   useEffect(() => {
     if (sequence.length > 0 && slideIdx >= sequence.length) {
       setSlideIdx(0);
@@ -117,49 +116,36 @@ export function MuralCarousel() {
 
   if (sequence.length === 0) {
     return (
-      <main className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-rosa-pastel via-rosa-bubble to-lilas px-12 text-center gap-6">
-        <h1 className="font-bubble text-white text-7xl drop-shadow-[4px_4px_0_rgba(0,0,0,0.3)]">
-          MURAL DA JU
-        </h1>
-        <p className="font-display text-white text-2xl uppercase tracking-widest">
-          ainda esperando os recados chegarem 💌
-        </p>
-        {erro && (
-          <p className="font-body text-white/80 text-sm mt-4">⚠️ {erro}</p>
-        )}
-      </main>
+      <CapricoFrame>
+        <div className="flex flex-col items-center gap-8 text-center">
+          <h2 className="font-bubble text-rosa-choque text-7xl drop-shadow-[4px_4px_0_#fff]">
+            esperando os recados 💌
+          </h2>
+          <p className="font-display text-preto-revista text-2xl uppercase tracking-widest">
+            ainda ninguém respondeu o quiz
+          </p>
+          {erro && (
+            <p className="font-body text-preto-revista/60 text-base mt-4">
+              ⚠️ {erro}
+            </p>
+          )}
+        </div>
+      </CapricoFrame>
     );
   }
 
   const slide = sequence[slideIdx % sequence.length];
 
   return (
-    <main className="fixed inset-0 overflow-hidden bg-gradient-to-br from-rosa-pastel via-rosa-bubble to-lilas">
-      {/* Faixa header sempre presente */}
-      <header className="absolute top-0 left-0 right-0 px-12 pt-8 z-10 flex justify-between items-center">
-        <div>
-          <h1 className="font-bubble text-white text-5xl drop-shadow-[3px_3px_0_rgba(0,0,0,0.35)] leading-none">
-            JU FAZ 40
-          </h1>
-          <p className="font-display text-white/90 text-sm uppercase tracking-widest mt-1">
-            ✨ teste oficial Capricho
-          </p>
-        </div>
-        <p className="font-display text-white/80 text-sm uppercase tracking-widest text-right">
-          24 . 04 . 2027
-          <br />
-          <span className="text-xs">Ilha do Retiro · Recife</span>
-        </p>
-      </header>
-
+    <CapricoFrame>
       <AnimatePresence mode="wait">
         <motion.div
           key={`${slideIdx}-${slide.kind}`}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 flex items-center justify-center px-16 pt-32 pb-16"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 1.03, y: -20 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="absolute inset-0 flex items-center justify-center px-20 pt-44 pb-20"
         >
           {slide.kind === "ranking" ? (
             <RankingSlide rows={slide.rows} />
@@ -169,24 +155,180 @@ export function MuralCarousel() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Barra de progresso fininha embaixo */}
       <SlideProgressBar
         key={`bar-${slideIdx}`}
         durationMs={
           slide.kind === "ranking" ? RANKING_DURATION_MS : RECADO_DURATION_MS
         }
       />
+    </CapricoFrame>
+  );
+}
+
+/**
+ * Frame Capricho — gradiente rosa, header gigante, stickers nos cantos,
+ * sparkles flutuando, footer com data. É o "moldura" fixa que envolve
+ * todos os slides. O conteúdo passa por dentro.
+ */
+function CapricoFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="fixed inset-0 overflow-hidden bg-gradient-to-br from-rosa-pastel via-rosa-bubble to-lilas">
+      {/* Sparkles aleatórios flutuando ao fundo */}
+      <FloatingSparkles />
+
+      {/* Stickers fixos nos cantos */}
+      <Stickers />
+
+      {/* Header gigante estilo capa Capricho */}
+      <header className="absolute top-0 left-0 right-0 px-12 pt-6 z-20 flex items-start justify-between gap-8">
+        <div className="flex flex-col items-start gap-2">
+          <h1
+            className="font-bubble text-rosa-choque leading-none"
+            style={{
+              fontSize: "clamp(64px, 7vw, 112px)",
+              textShadow:
+                "4px 4px 0 #fff, 8px 8px 0 rgba(199,125,255,0.7)",
+              letterSpacing: 2,
+            }}
+          >
+            JU FAZ 40
+          </h1>
+          <div className="bg-rosa-choque text-white px-4 py-1.5 rounded-full font-display uppercase tracking-widest text-sm shadow-[3px_3px_0_rgba(0,0,0,0.25)]">
+            ✨ teste oficial Capricho ✨
+          </div>
+          <div className="bg-amarelo-glitter text-preto-revista px-3 py-0.5 rounded-full font-display uppercase tracking-wider text-xs shadow-[2px_2px_0_rgba(0,0,0,0.2)] -mt-1">
+            edição especial · 40 anos
+          </div>
+        </div>
+
+        <div className="bg-white/90 backdrop-blur-sm border-4 border-rosa-bubble rounded-2xl px-5 py-3 text-right shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
+          <p className="font-bubble text-rosa-choque text-2xl leading-none">
+            24 . 04 . 2027
+          </p>
+          <p className="font-display text-preto-revista text-xs uppercase tracking-widest mt-1">
+            ilha do retiro · recife
+          </p>
+        </div>
+      </header>
+
+      {/* Conteúdo do slide */}
+      {children}
+
+      {/* Mascote Ju "comemorando" no canto inferior esquerdo */}
+      <div className="absolute bottom-12 left-12 z-20 pointer-events-none">
+        <JuMascot mood="feliz" size="lg" />
+      </div>
+
+      {/* Footer barrinha com URL */}
+      <footer className="absolute bottom-2 left-0 right-0 z-10 text-center">
+        <p className="font-display text-white/80 text-xs uppercase tracking-[0.4em]">
+          quiz-ju.vercel.app · faça o seu também 💖
+        </p>
+      </footer>
     </main>
+  );
+}
+
+/** Stickers nos cantos — emojis grandes rotacionados, dão look de revista.
+ *  Bottom-left livre pra mascote da Ju aparecer lá. */
+function Stickers() {
+  return (
+    <>
+      <span className="absolute top-32 right-12 text-7xl rotate-[18deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+        💖
+      </span>
+      <span className="absolute top-1/2 left-6 text-5xl rotate-[8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none -translate-y-1/2">
+        ⭐
+      </span>
+      <span className="absolute top-1/2 right-6 text-5xl rotate-[-8deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none -translate-y-1/2">
+        💎
+      </span>
+      <span className="absolute bottom-16 right-12 text-6xl rotate-[15deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+        ✨
+      </span>
+      <span className="absolute top-44 left-1/2 text-5xl rotate-[-22deg] drop-shadow-[3px_3px_0_rgba(0,0,0,0.2)] z-10 pointer-events-none">
+        🎀
+      </span>
+    </>
+  );
+}
+
+/** Sparkles aleatórios flutuando ao fundo (decoração contínua). */
+function FloatingSparkles() {
+  const sparkles = useMemo(() => {
+    const emojis = ["✨", "💕", "⭐", "💖", "🌟", "💫"];
+    return Array.from({ length: 14 }, (_, i) => ({
+      id: i,
+      emoji: emojis[i % emojis.length],
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 16 + Math.random() * 24,
+      delay: Math.random() * 6,
+      duration: 6 + Math.random() * 6,
+    }));
+  }, []);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {sparkles.map((s) => (
+        <motion.span
+          key={s.id}
+          className="absolute"
+          style={{
+            left: `${s.left}%`,
+            top: `${s.top}%`,
+            fontSize: s.size,
+            filter: "drop-shadow(0 1px 2px rgba(255,105,180,0.4))",
+          }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.3, 1, 0.3],
+            rotate: [0, 15, -15, 0],
+          }}
+          transition={{
+            duration: s.duration,
+            delay: s.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          {s.emoji}
+        </motion.span>
+      ))}
+    </div>
   );
 }
 
 function RankingSlide({ rows }: { rows: RankingRow[] }) {
   return (
-    <div className="w-full max-w-5xl flex flex-col items-center gap-6">
-      <h2 className="font-bubble text-white text-7xl drop-shadow-[4px_4px_0_rgba(0,0,0,0.35)]">
-        🏆 RANKING
-      </h2>
-      <div className="bg-white/95 rounded-3xl border-8 border-amarelo-glitter shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-8 w-full">
+    <div className="w-full max-w-[1200px] flex flex-col items-center gap-5">
+      <div className="text-center">
+        <h2
+          className="font-bubble text-white leading-tight uppercase"
+          style={{
+            fontSize: "clamp(40px, 4.5vw, 72px)",
+            textShadow: "4px 4px 0 #FF1493, 8px 8px 0 rgba(0,0,0,0.2)",
+            letterSpacing: 1,
+          }}
+        >
+          Ranking dos Melhores
+          <br />
+          Amigos da Ju
+        </h2>
+        <p className="font-display italic text-white/90 text-lg mt-2 tracking-wider">
+          (depois do Luis, claro 👑)
+        </p>
+      </div>
+
+      <div className="bg-white/95 rounded-3xl border-[10px] border-amarelo-glitter shadow-[0_25px_70px_rgba(0,0,0,0.35)] p-8 w-full relative">
+        {/* Cantinhos da revista */}
+        <span className="absolute -top-5 -left-5 text-5xl rotate-[-15deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
+          ⭐
+        </span>
+        <span className="absolute -top-5 -right-5 text-5xl rotate-[18deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
+          💖
+        </span>
+
         <table className="w-full">
           <tbody>
             {rows.map((r, i) => {
@@ -202,21 +344,21 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
                         : "bg-rosa-pastel/20"
                   }`}
                 >
-                  <td className="px-3 py-3 font-bubble text-rosa-choque text-3xl w-16 text-center">
+                  <td className="px-4 py-3 font-bubble text-rosa-choque text-4xl w-20 text-center">
                     {isLuisRow ? "👑" : i + 1}
                   </td>
-                  <td className="px-3 py-3 font-bubble text-preto-revista text-3xl">
+                  <td className="px-4 py-3 font-bubble text-preto-revista text-3xl">
                     {r.nome}
                     {isLuisRow && (
-                      <span className="block font-body italic text-sm text-preto-revista/70 normal-case mt-1">
-                        o melhor amigo disparado — autor do quiz, é juiz e jogador
+                      <span className="block font-body italic text-base text-preto-revista/70 normal-case mt-0.5">
+                        o melhor amigo disparado · autor do quiz, é juiz e jogador
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-3 font-display text-rosa-choque text-base uppercase tracking-wider hidden md:table-cell">
+                  <td className="px-4 py-3 font-display text-rosa-choque text-base uppercase tracking-wider hidden lg:table-cell max-w-xs truncate">
                     {r.titulo ?? ""}
                   </td>
-                  <td className="px-3 py-3 font-bubble text-rosa-choque text-3xl text-right whitespace-nowrap">
+                  <td className="px-4 py-3 font-bubble text-rosa-choque text-3xl text-right whitespace-nowrap">
                     {r.pontuacao}
                     <span className="text-preto-revista/40 text-xl">
                       /{r.total}
@@ -233,24 +375,45 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
 }
 
 function RecadoSlide({ row }: { row: RecadoRow }) {
+  const recadoLen = row.recado.length;
+  const fontSize =
+    recadoLen > 280 ? "1.7rem" : recadoLen > 160 ? "2.2rem" : "2.8rem";
+
   return (
-    <div className="w-full max-w-5xl flex flex-col items-center gap-6">
-      <h2 className="font-bubble text-white text-5xl drop-shadow-[3px_3px_0_rgba(0,0,0,0.35)]">
-        💌 recado pra Ju
+    <div className="w-full max-w-[1100px] flex flex-col items-center gap-5">
+      <h2
+        className="font-bubble text-white uppercase tracking-wide"
+        style={{
+          fontSize: "clamp(36px, 4vw, 64px)",
+          textShadow: "4px 4px 0 #FF1493, 8px 8px 0 rgba(0,0,0,0.2)",
+        }}
+      >
+        💌 Recado pra Ju
       </h2>
-      <div className="bg-white/95 rounded-3xl border-8 border-rosa-bubble shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-12 w-full text-center">
+
+      {/* Polaroid com fita crepe */}
+      <div
+        className="bg-[#fdf8f0] border-[6px] border-white p-12 rounded-sm shadow-[0_25px_70px_rgba(0,0,0,0.35)] relative w-full max-w-[900px]"
+        style={{
+          transform: "rotate(-1deg)",
+        }}
+      >
+        {/* fita crepe rosa em cima */}
+        <span className="absolute -top-7 left-1/2 -translate-x-1/2 w-32 h-9 bg-rosa-bubble/80 rotate-[-2deg] shadow-[0_3px_6px_rgba(0,0,0,0.2)]" />
+
         <p
-          className="font-body text-preto-revista whitespace-pre-wrap leading-tight"
-          style={{
-            fontSize: row.recado.length > 200 ? "2rem" : "2.75rem",
-          }}
+          className="font-body text-preto-revista whitespace-pre-wrap leading-tight text-center"
+          style={{ fontSize }}
         >
           “{row.recado}”
         </p>
-        <div className="mt-8 pt-6 border-t-2 border-rosa-pastel flex items-center justify-between gap-4">
-          <p className="font-bubble text-rosa-choque text-4xl">— {row.nome}</p>
+
+        <div className="mt-8 pt-6 border-t-2 border-dashed border-rosa-pastel flex items-center justify-between gap-4 flex-wrap">
+          <p className="font-bubble text-rosa-choque text-4xl">
+            — {row.nome}
+          </p>
           {row.titulo && (
-            <p className="font-display text-rosa-choque text-base uppercase tracking-widest opacity-70 text-right hidden md:block">
+            <p className="font-display text-rosa-choque/80 text-base uppercase tracking-widest text-right">
               {row.titulo}
             </p>
           )}
@@ -260,12 +423,11 @@ function RecadoSlide({ row }: { row: RecadoRow }) {
   );
 }
 
-/** Barra de progresso do slide atual — visual feedback do tempo restante. */
 function SlideProgressBar({ durationMs }: { durationMs: number }) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30">
+    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/30 z-30">
       <motion.div
-        className="h-full bg-amarelo-glitter"
+        className="h-full bg-amarelo-glitter shadow-[0_0_8px_rgba(255,215,0,0.6)]"
         initial={{ width: "0%" }}
         animate={{ width: "100%" }}
         transition={{ duration: durationMs / 1000, ease: "linear" }}
