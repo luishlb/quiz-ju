@@ -313,7 +313,7 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
             letterSpacing: 1,
           }}
         >
-          Ranking dos Melhores Amigos da Ju
+          Top 10 amigos que mais sabem sobre a Ju
         </h2>
         <p className="font-display italic text-white/90 text-base mt-2 tracking-wider">
           (depois do Luis, claro 👑)
