@@ -145,7 +145,7 @@ export function MuralCarousel() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 1.03, y: -20 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
-          className="absolute inset-0 flex items-center justify-center px-16 pt-28 pb-16"
+          className="absolute inset-0 flex items-start justify-center px-16 pt-32 pb-16"
         >
           {slide.kind === "ranking" ? (
             <RankingSlide rows={slide.rows} />
@@ -320,12 +320,12 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
         </p>
       </div>
 
-      <div className="bg-white/95 rounded-3xl border-[10px] border-amarelo-glitter shadow-[0_25px_70px_rgba(0,0,0,0.35)] p-8 w-full relative">
+      <div className="bg-white/95 rounded-3xl border-[8px] border-amarelo-glitter shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-5 w-full relative">
         {/* Cantinhos da revista */}
-        <span className="absolute -top-5 -left-5 text-5xl rotate-[-15deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
+        <span className="absolute -top-4 -left-4 text-4xl rotate-[-15deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
           ⭐
         </span>
-        <span className="absolute -top-5 -right-5 text-5xl rotate-[18deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
+        <span className="absolute -top-4 -right-4 text-4xl rotate-[18deg] drop-shadow-[2px_2px_0_rgba(0,0,0,0.25)]">
           💖
         </span>
 
@@ -338,29 +338,29 @@ function RankingSlide({ rows }: { rows: RankingRow[] }) {
                   key={r.id}
                   className={`${
                     isLuisRow
-                      ? "bg-amarelo-glitter/30 border-y-4 border-amarelo-glitter"
+                      ? "bg-amarelo-glitter/30 border-y-2 border-amarelo-glitter"
                       : i % 2 === 0
                         ? ""
-                        : "bg-rosa-pastel/20"
+                        : "bg-rosa-pastel/15"
                   }`}
                 >
-                  <td className="px-4 py-3 font-bubble text-rosa-choque text-4xl w-20 text-center">
+                  <td className="px-3 py-1.5 font-bubble text-rosa-choque text-2xl w-14 text-center">
                     {isLuisRow ? "👑" : i + 1}
                   </td>
-                  <td className="px-4 py-3 font-bubble text-preto-revista text-3xl">
+                  <td className="px-3 py-1.5 font-bubble text-preto-revista text-xl">
                     {r.nome}
                     {isLuisRow && (
-                      <span className="block font-body italic text-base text-preto-revista/70 normal-case mt-0.5">
-                        o melhor amigo disparado · autor do quiz, é juiz e jogador
+                      <span className="block font-body italic text-xs text-preto-revista/70 normal-case mt-0">
+                        o melhor amigo disparado · autor do quiz
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-display text-rosa-choque text-base uppercase tracking-wider hidden lg:table-cell max-w-xs truncate">
+                  <td className="px-3 py-1.5 font-display text-rosa-choque text-sm uppercase tracking-wider hidden lg:table-cell max-w-xs truncate">
                     {r.titulo ?? ""}
                   </td>
-                  <td className="px-4 py-3 font-bubble text-rosa-choque text-3xl text-right whitespace-nowrap">
+                  <td className="px-3 py-1.5 font-bubble text-rosa-choque text-2xl text-right whitespace-nowrap">
                     {r.pontuacao}
-                    <span className="text-preto-revista/40 text-xl">
+                    <span className="text-preto-revista/40 text-base">
                       /{r.total}
                     </span>
                   </td>
