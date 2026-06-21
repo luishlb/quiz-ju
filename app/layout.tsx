@@ -23,9 +23,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Você é amiga(o) de verdade da Ju? | Edição Especial Ju Faz 40",
+  title: "Você é amiga(o) de verdade de Ju? | Edição Especial Ju Faz 40",
   description:
-    "Teste oficial Capricho — descubra se você é BFF nota 10 ou se ainda tem muito o que aprender sobre a Juliana.",
+    "Teste oficial Capricho — descubra se você é BFF nota 10 ou se ainda tem muito o que aprender sobre Juliana.",
 };
 
 export default function RootLayout({

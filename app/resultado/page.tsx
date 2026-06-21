@@ -98,7 +98,7 @@ function Calculando() {
         Calculando seu resultado...
       </p>
       <p className="font-body text-preto-revista/60">
-        Conferindo se você é amiga(o) de verdade da Ju 💎
+        Conferindo se você é amiga(o) de verdade de Ju 💎
       </p>
     </main>
   );
@@ -138,7 +138,7 @@ function Resultado({ data, testMode }: { data: AvaliacaoResp; testMode: boolean 
   });
   const ogUrl = `/api/og?${ogParams.toString()}`;
 
-  const shareText = `Acabei de fazer o quiz "Você é amigo(a) de verdade da Ju?" e tirei ${score}/${total} — ${titulo} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
+  const shareText = `Acabei de fazer o quiz "Você é amigo(a) de verdade de Ju?" e tirei ${score}/${total} — ${titulo} ${tier.emoji}\n\nFaz o seu também: ${typeof window !== "undefined" ? window.location.origin : ""}`;
   const wppHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (

@@ -45,7 +45,7 @@ export const TIERS: TitleTier[] = [
   {
     min: 0, max: 2,
     emoji: "🚨",
-    title: "Você é o Breno?",
+    title: "Você é Breno?",
     subtitle: "só ele tem desculpa",
     vibe: "rosa-choque", // vermelho zoeira (usar bg vermelho via inline style se quiser)
   },

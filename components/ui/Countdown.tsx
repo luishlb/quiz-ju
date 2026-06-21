@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const TARGET_ISO = "2027-04-24T21:00:00-03:00"; // 24/04/2027 21h Recife (BRT)
+const TARGET_ISO = "2027-04-24T19:00:00-03:00"; // 24/04/2027 19h Recife (BRT)
 
 type TimeLeft = {
   days: number;
@@ -42,7 +42,7 @@ export function Countdown() {
   return (
     <div className="text-center">
       <p className="font-display text-rosa-choque text-sm uppercase tracking-wider mb-2">
-        Faltam pro reveillon nostalgia da Ju ✨
+        Faltam pro reveillon nostalgia de Ju ✨
       </p>
       <div className="flex justify-center gap-2 sm:gap-4">
         <Cell value={time.days} label="dias" />

@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("gerarAvaliacao falhou:", err);
     manchete = `${nome}, você foi ${titulo}! ${subtitulo}.`;
-    manchetePost = `Tirei ${score}/${total} no quiz da Ju — ${titulo}!`;
+    manchetePost = `Tirei ${score}/${total} no quiz de Ju — ${titulo}!`;
   }
 
   // 4. Persiste tudo no Postgres (silencioso — falha de DB não quebra a resposta).

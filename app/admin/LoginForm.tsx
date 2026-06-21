@@ -42,7 +42,7 @@ export function LoginForm() {
     <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-6 max-w-sm mx-auto w-full">
       <h1 className="font-bubble text-rosa-choque text-4xl">🔐 Admin</h1>
       <p className="font-display text-preto-revista/70 text-center text-sm uppercase tracking-wider">
-        Só a Ju e o Luis passam aqui
+        Só Ju e Luis passam aqui
       </p>
 
       <form onSubmit={submit} className="flex flex-col gap-4 w-full">

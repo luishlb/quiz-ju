@@ -1,5 +1,5 @@
 /**
- * Gabarito completo do quiz "Você é amiga(o) de verdade da Ju?"
+ * Gabarito completo do quiz "Você é amiga(o) de verdade de Ju?"
  *
  * Ordem do array reflete a ordem que as perguntas aparecem no quiz:
  *   1. Múltipla escolha (15) — clicar pra avançar
@@ -61,7 +61,7 @@ export const QUESTIONS: Question[] = [
 
   {
     id: "q01", section: 1, type: "multiple", scores: true,
-    prompt: "Qual a altura da Ju?",
+    prompt: "Qual a altura de Ju?",
     options: ["1,47m", "1,49m", "1,52m", "1,55m", "1,58m"],
     correctIndex: 1,
   },
@@ -73,7 +73,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q03", section: 1, type: "multiple", scores: true,
-    prompt: "Quantos irmãos a Ju tem?",
+    prompt: "Quantos irmãos Ju tem?",
     options: ["2", "3", "4", "5"],
     correctIndex: 2,
   },
@@ -91,7 +91,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q08", section: 1, type: "multiple", scores: true,
-    prompt: "Quantos vestibulares a Ju fez até passar?",
+    prompt: "Quantos vestibulares Ju fez até passar?",
     options: ["1", "2", "3", "4"],
     correctIndex: 2,
   },
@@ -103,7 +103,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q11", section: 1, type: "multiple", scores: true,
-    prompt: "Em que ano ela conheceu o Breno?",
+    prompt: "Em que ano ela conheceu Breno?",
     options: ["2002", "2003", "2004", "2005", "2006"],
     correctIndex: 2,
   },
@@ -133,7 +133,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q15", section: 1, type: "multiple", scores: true,
-    prompt: "Qual a série que a Ju assistiu mais vezes na vida?",
+    prompt: "Qual a série que Ju assistiu mais vezes na vida?",
     options: [
       "Friends",
       "How I Met Your Mother",
@@ -145,7 +145,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q16", section: 1, type: "multiple", scores: true,
-    prompt: "Qual a maior mania/cacoete da Ju?",
+    prompt: "Qual a maior mania/cacoete de Ju?",
     options: [
       "Roer unha sem parar",
       "Querer mandar em tudo",
@@ -163,25 +163,25 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q19", section: 1, type: "multiple", scores: true,
-    prompt: "Qual a viagem mais marcante que a Ju já fez?",
+    prompt: "Qual a viagem mais marcante que Ju já fez?",
     options: ["Chile", "Argentina", "Europa", "Estados Unidos", "Disney"],
     correctIndex: 0,
   },
   {
     id: "q21", section: 1, type: "multiple", scores: true,
-    prompt: "Qual foi o primeiro porre que a Ju tomou?",
+    prompt: "Qual foi o primeiro porre que Ju tomou?",
     options: [
       "Copa 2002 — é pentaaaa",
       "Formatura de medicina",
-      "Primeiro churrasco na casa do Hugo (no Tobago) — \"Liga pra meu irmão\"",
+      "Primeiro churrasco na casa de Hugo (no Tobago) — \"Liga pra meu irmão\"",
       "Comemoração do vestibular de medicina",
-      "Bar do Deca no pré-vestibular — andando no Geninha Móvel",
+      "Bar de Deca no pré-vestibular — andando no Geninha Móvel",
     ],
     correctIndex: 4,
   },
   {
     id: "q22", section: 1, type: "multiple", scores: true,
-    prompt: "Onde a Ju quebrou o pé e precisou de cirurgia?",
+    prompt: "Onde Ju quebrou o pé e precisou de cirurgia?",
     options: [
       "De patins, na praça",
       "De bicicleta, na praça",
@@ -204,12 +204,12 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q07", section: 2, type: "short", scores: true,
-    prompt: "Quem foi o primeiro namorado da Ju?",
+    prompt: "Quem foi o primeiro namorado de Ju?",
     aliases: ["gustavo", "guga"],
   },
   {
     id: "q10", section: 2, type: "short", scores: true,
-    prompt: "Onde ela conheceu o Breno?",
+    prompt: "Onde ela conheceu Breno?",
     aliases: [
       "atual", "colegio atual", "colégio atual", "no atual",
       "no colegio atual", "no colégio atual", "atual mesmo",
@@ -217,7 +217,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q12", section: 2, type: "short", scores: true,
-    prompt: "Qual a comida favorita da Ju?",
+    prompt: "Qual a comida favorita de Ju?",
     aliases: ["chocolate"],
   },
   {
@@ -227,13 +227,13 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q20", section: 2, type: "short", scores: true,
-    prompt: "Qual a festa mais marcante que a Ju já promoveu?",
+    prompt: "Qual a festa mais marcante que Ju já promoveu?",
     // resposta certa: festa da caveira mexicana (foi o aniversário DELA)
     keywords: ["caveira", "mexicana", "dia dos mortos", "muertos", "catrina"],
   },
   {
     id: "q27", section: 2, type: "short", scores: true,
-    prompt: "Onde a Ju se acidentou tentando pegar um drone numa lancha e precisou ir pra UPA?",
+    prompt: "Onde Ju se acidentou tentando pegar um drone numa lancha e precisou ir pra UPA?",
     aliases: [
       "boipeba", "ilha de boipeba",
       "morro de sao paulo", "morro de são paulo", "morro",
@@ -252,7 +252,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q29", section: 2, type: "short", scores: true,
-    prompt: "Pra qual casal a Ju organizou junto com outros amigos um casamento surpresa?",
+    prompt: "Pra qual casal Ju organizou junto com outros amigos um casamento surpresa?",
     aliases: [
       "luis e camila", "luís e camila", "luis/camila", "camila e luis",
       "camila e luís", "luis camila", "luís camila", "camila/luis",
@@ -260,7 +260,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q30", section: 2, type: "short", scores: true,
-    prompt: "Onde a Ju estava quando foi expulsa de uma ambulancha?",
+    prompt: "Onde Ju estava quando foi expulsa de uma ambulancha?",
     aliases: [
       // qualquer menção a Pará ou Cotijuba conta
       "para", "pará", "no para", "no pará",
@@ -280,11 +280,11 @@ export const QUESTIONS: Question[] = [
 
   {
     id: "q23", section: 3, type: "open-short", scores: false,
-    prompt: "Defina a Ju em UMA palavra:",
+    prompt: "Defina Ju em UMA palavra:",
   },
   {
     id: "q24", section: 3, type: "open-long", scores: false,
-    prompt: "Complete a frase: \"A Ju pra mim é...\"",
+    prompt: "Complete a frase: \"Ju pra mim é...\"",
   },
   {
     id: "q26", section: 3, type: "open-long", scores: false,
